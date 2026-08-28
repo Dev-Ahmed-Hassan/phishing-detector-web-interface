@@ -17,6 +17,8 @@ const translations = {
     suspiciousLinksTitle: "Suspicious Links",
     actionTitle: "Action Required",
     sourcesTitle: "Sources & Evidence",
+    footprintTitle: "Digital Footprint",
+    logTitle: "View Forensic Logs",
     settingsTitle: "Settings",
     languageLabel: "Language",
     themeLabel: "Theme",
@@ -40,6 +42,8 @@ const translations = {
     suspiciousLinksTitle: "مشکوک لنکس",
     actionTitle: "مطلوبہ کارروائی",
     sourcesTitle: "ذرائع اور ثبوت",
+    footprintTitle: "ڈیجیٹل نقش قدم",
+    logTitle: "فارنسک لاگز دیکھیں",
     settingsTitle: "ترتیبات",
     languageLabel: "زبان",
     themeLabel: "تھیم",
@@ -238,6 +242,13 @@ export default function Home() {
                   <p className="text-[var(--foreground)] text-sm leading-relaxed font-bold bg-[var(--card-bg)] p-3 border-2 border-[var(--border-color)] inline-block">{report.recommended_action}</p>
                 </div>
 
+                {report.digital_footprint && (
+                  <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.footprintTitle}</h4>
+                    <p className="text-[#2d2a26] text-sm leading-relaxed font-medium font-serif">{report.digital_footprint}</p>
+                  </div>
+                )}
+
                 {report.sources && report.sources.length > 0 && (
                   <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
                     <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.sourcesTitle}</h4>
@@ -250,6 +261,26 @@ export default function Home() {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+                
+                {report.investigation_log && report.investigation_log.length > 0 && (
+                  <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
+                    <details className="group">
+                      <summary className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] cursor-pointer hover:opacity-70 transition-opacity list-none flex items-center justify-between">
+                        {t.logTitle}
+                        <span className="text-xs border-2 border-[#2d2a26] px-2 py-0.5 group-open:bg-[#2d2a26] group-open:text-[var(--card-bg)] transition-colors">
+                          TECH
+                        </span>
+                      </summary>
+                      <div className="mt-4 p-4 bg-[#2d2a26] text-[#faf8f5] font-mono text-xs border-2 border-[#2d2a26] overflow-x-auto" dir="ltr">
+                        <ol className="list-decimal list-inside space-y-2">
+                          {report.investigation_log.map((log: string, i: number) => (
+                            <li key={i} className="opacity-90">{log}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </details>
                   </div>
                 )}
               </div>
