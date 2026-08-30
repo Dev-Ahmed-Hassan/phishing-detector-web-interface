@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { AnalyzeV2Response, Lang } from "@/lib/report-types";
+import DossierReport from "@/components/DossierReport";
+import InvestigationProgress from "@/components/InvestigationProgress";
 
 const translations = {
   en: {
@@ -11,22 +14,18 @@ const translations = {
     evidenceLabel: "Evidence (Screenshot / Audio)",
     btnAnalyze: "ANALYZING...",
     btnScan: "SCAN FOR SCAMS",
-    riskTitle: "Risk Assessment",
-    aiConfidence: "AI Confidence",
-    analysisTitle: "Analysis",
-    suspiciousLinksTitle: "Suspicious Links",
-    actionTitle: "Action Required",
-    sourcesTitle: "Sources & Evidence",
-    footprintTitle: "Digital Footprint",
-    logTitle: "View Forensic Logs",
+    noticeTitle: "NOTHING TO INVESTIGATE",
+    errorTitle: "INVESTIGATION FAILED",
+    retryBtn: "RETRY SCAN",
+    newScanBtn: "START NEW SCAN",
     settingsTitle: "Settings",
     languageLabel: "Language",
     themeLabel: "Theme",
     themeLight: "Light",
     themeDark: "Dark",
     closeBtn: "CLOSE",
-    alertError: "An error occurred during analysis.",
-    alertConnect: "Failed to connect to the server."
+    alertError: "An error occurred during analysis. Please try again.",
+    alertConnect: "Failed to connect to the investigation server."
   },
   ur: {
     title: "تصدیق کریں",
@@ -36,52 +35,52 @@ const translations = {
     evidenceLabel: "ثبوت (اسکرین شاٹ / آڈیو)",
     btnAnalyze: "...تجزیہ جاری ہے",
     btnScan: "اسکیم اسکین کریں",
-    riskTitle: "خطرے کی تشخیص",
-    aiConfidence: "اے آئی کا اعتماد",
-    analysisTitle: "تجزیہ",
-    suspiciousLinksTitle: "مشکوک لنکس",
-    actionTitle: "مطلوبہ کارروائی",
-    sourcesTitle: "ذرائع اور ثبوت",
-    footprintTitle: "ڈیجیٹل نقش قدم",
-    logTitle: "فارنسک لاگز دیکھیں",
+    noticeTitle: "تحقیق کے لیے کچھ نہیں ملا",
+    errorTitle: "تحقیق ناکام رہی",
+    retryBtn: "دوبارہ کوشش کریں",
+    newScanBtn: "نئی جانچ شروع کریں",
     settingsTitle: "ترتیبات",
     languageLabel: "زبان",
     themeLabel: "تھیم",
     themeLight: "روشن",
     themeDark: "تاریک",
     closeBtn: "بند کریں",
-    alertError: "تجزیہ کے دوران ایک خرابی پیش آگئی۔",
+    alertError: "تجزیہ کے دوران ایک خرابی پیش آگئی۔ دوبارہ کوشش کریں۔",
     alertConnect: "سرور سے جڑنے میں ناکام۔"
   }
 };
-
-type Language = 'en' | 'ur';
 
 export default function Home() {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [report, setReport] = useState<any>(null);
-  
+  const [report, setReport] = useState<AnalyzeV2Response | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   // State for Settings & Localization
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Lang>("en");
   const [isDark, setIsDark] = useState(false);
+
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const t = translations[language];
+  const isUrdu = language === "ur";
 
   // Hydrate persistence from localStorage on mount
   useEffect(() => {
-    const savedLang = localStorage.getItem('app_language') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'ur')) {
+    const savedLang = localStorage.getItem("app_language") as Lang;
+    if (savedLang && (savedLang === "en" || savedLang === "ur")) {
       setLanguage(savedLang);
     }
-    
-    // Read theme class from HTML element (set by toggleTheme earlier, or detect preference)
+
     setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
-  const handleLanguageChange = (lang: Language) => {
+  const handleLanguageChange = (lang: Lang) => {
     setLanguage(lang);
-    localStorage.setItem('app_language', lang);
+    localStorage.setItem("app_language", lang);
   };
 
   const toggleTheme = () => {
@@ -98,51 +97,68 @@ export default function Home() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const runScan = async () => {
     if (!text.trim() && !file) return;
 
     setIsSubmitting(true);
     setReport(null);
+    setNotice(null);
+    setError(null);
 
     const formData = new FormData();
     if (text) formData.append("text", text);
     if (file) formData.append("file", file);
-    formData.append("user_id", "web_user_demo"); 
+    formData.append("user_id", "web_user_demo");
+
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
 
     try {
-      const response = await fetch("/api/analyze-web", {
+      const response = await fetch("/api/analyze-v2", {
         method: "POST",
         body: formData,
       });
-      
-      const data = await response.json();
-      if (data.status === "success") {
-        setReport(data.report);
+
+      const data: AnalyzeV2Response = await response.json();
+      if (data.status === "success" && data.report) {
+        setReport(data);
+        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      } else if (data.status === "success") {
+        setNotice(data.message || t.noticeTitle);
       } else {
-        alert(t.alertError);
+        setError(t.alertError);
       }
-    } catch (error) {
-      console.error(error);
-      alert(t.alertConnect);
+    } catch (err) {
+      console.error(err);
+      setError(t.alertConnect);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const t = translations[language];
-  const isUrdu = language === 'ur';
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    runScan();
+  };
+
+  const startNewScan = () => {
+    setReport(null);
+    setNotice(null);
+    setError(null);
+    setText("");
+    setFile(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden bg-[var(--background)] ${isUrdu ? 'font-[Noto_Nastaliq_Urdu,serif]' : ''}`}>
-      
+    <div className={`min-h-screen flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden bg-[var(--background)] ${isUrdu ? "font-[Noto_Nastaliq_Urdu,serif]" : ""}`}>
+
       {/* Designed Background Layer */}
       <div className="absolute inset-0 bg-mesh opacity-60 pointer-events-none z-0"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--background)_100%)] pointer-events-none z-0"></div>
 
       {/* Main Content */}
       <main className="w-full max-w-2xl brutal-card p-10 z-10 bg-[var(--card-bg)] relative">
-        <header className={`mb-10 border-b-2 border-[var(--border-color)] pb-6 ${isUrdu ? 'text-right' : 'text-left'}`}>
+        <header className={`mb-10 border-b-2 border-[var(--border-color)] pb-6 ${isUrdu ? "text-right" : "text-left"}`}>
           <h1 className="text-4xl font-serif font-bold tracking-tight text-[var(--foreground)] uppercase">
             {t.title}
           </h1>
@@ -151,7 +167,7 @@ export default function Home() {
           </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-8" dir={isUrdu ? 'rtl' : 'ltr'}>
+        <form onSubmit={handleSubmit} className="space-y-8" dir={isUrdu ? "rtl" : "ltr"}>
           <div className="space-y-3">
             <label className="text-sm font-bold text-[var(--foreground)] uppercase tracking-wider block">
               {t.msgLabel}
@@ -173,7 +189,7 @@ export default function Home() {
             <div className="brutal-input p-2 flex items-center">
               <input
                 type="file"
-                className={`w-full text-sm text-[var(--foreground)] file:py-2 file:px-4 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-sm file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? 'file:ml-4' : 'file:mr-4'}`}
+                className={`w-full text-sm text-[var(--foreground)] file:py-2 file:px-4 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-sm file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? "file:ml-4" : "file:mr-4"}`}
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 disabled={isSubmitting}
               />
@@ -189,108 +205,57 @@ export default function Home() {
           </button>
         </form>
 
-        {report && (
-          <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-500" dir={isUrdu ? 'rtl' : 'ltr'}>
-            <div className="brutal-card p-8" style={{ backgroundColor: report.risk_level.toLowerCase() === 'high' ? '#f5d5d5' : report.risk_level.toLowerCase() === 'medium' ? '#f5e8ba' : '#d5ebd8', borderColor: 'var(--border-color)', color: 'var(--foreground)' }}>
-              <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-[var(--border-color)]">
-                <div>
-                  <h3 className="text-xl font-serif font-bold uppercase tracking-widest text-[#2d2a26]">
-                    {t.riskTitle}
-                  </h3>
-                  {report.confidence_score !== undefined && (
-                    <p className="text-sm font-bold text-[#2d2a26] opacity-70 mt-1">
-                      {t.aiConfidence}: {report.confidence_score}%
-                    </p>
-                  )}
-                </div>
-                <span className="px-4 py-1.5 border-2 border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--foreground)] font-bold text-xs uppercase tracking-widest">
-                  {report.risk_level}
-                </span>
-              </div>
+        <div ref={resultsRef} className="scroll-mt-8">
+          {isSubmitting && <InvestigationProgress lang={language} />}
 
-              {report.threat_vectors && report.threat_vectors.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {report.threat_vectors.map((vector: string, i: number) => (
-                    <span key={i} className="px-2 py-1 bg-[#2d2a26] text-[#faf8f5] text-xs font-bold uppercase tracking-wider border-2 border-[#2d2a26]">
-                      {vector}
-                    </span>
-                  ))}
-                </div>
-              )}
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.analysisTitle}</h4>
-                  <p className="text-[#2d2a26] text-sm leading-relaxed font-medium font-serif">{report.specific_analysis}</p>
-                </div>
+          {notice && !isSubmitting && (
+            <div
+              className="mt-12 brutal-card p-8 fade-rise"
+              style={{ backgroundColor: "var(--v-inc-bg)", color: "var(--v-inc-ink)" }}
+              dir={isUrdu ? "rtl" : "ltr"}
+            >
+              <h3 className="text-xl font-serif font-bold uppercase tracking-widest">{t.noticeTitle}</h3>
+              <p className={`mt-3 text-sm font-bold leading-relaxed ${isUrdu ? "text-right" : ""}`}>{notice}</p>
+              <button onClick={startNewScan} className="mt-6 py-3 px-6 brutal-btn font-bold text-xs tracking-widest uppercase">
+                {t.newScanBtn}
+              </button>
+            </div>
+          )}
 
-                {report.detected_urls && report.detected_urls.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.suspiciousLinksTitle}</h4>
-                    <ul className="list-disc list-inside space-y-1" dir="ltr">
-                      {report.detected_urls.map((url: string, i: number) => (
-                        <li key={i} className={`text-[#2d2a26] text-sm font-bold break-all ${isUrdu ? 'text-right' : 'text-left'}`}>
-                          {url}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.actionTitle}</h4>
-                  <p className="text-[var(--foreground)] text-sm leading-relaxed font-bold bg-[var(--card-bg)] p-3 border-2 border-[var(--border-color)] inline-block">{report.recommended_action}</p>
-                </div>
-
-                {report.digital_footprint && (
-                  <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.footprintTitle}</h4>
-                    <p className="text-[#2d2a26] text-sm leading-relaxed font-medium font-serif">{report.digital_footprint}</p>
-                  </div>
-                )}
-
-                {report.sources && report.sources.length > 0 && (
-                  <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] mb-2">{t.sourcesTitle}</h4>
-                    <ul className="list-disc list-inside space-y-2" dir="ltr">
-                      {report.sources.map((url: string, i: number) => (
-                        <li key={i} className={`text-[#2d2a26] text-sm font-bold break-all ${isUrdu ? 'text-right' : 'text-left'}`}>
-                          <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600 transition-colors">
-                            {url}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {report.investigation_log && report.investigation_log.length > 0 && (
-                  <div className="mt-6 pt-6 border-t-2 border-[var(--border-color)]">
-                    <details className="group">
-                      <summary className="text-sm font-bold uppercase tracking-widest text-[#2d2a26] cursor-pointer hover:opacity-70 transition-opacity list-none flex items-center justify-between">
-                        {t.logTitle}
-                        <span className="text-xs border-2 border-[#2d2a26] px-2 py-0.5 group-open:bg-[#2d2a26] group-open:text-[var(--card-bg)] transition-colors">
-                          TECH
-                        </span>
-                      </summary>
-                      <div className="mt-4 p-4 bg-[#2d2a26] text-[#faf8f5] font-mono text-xs border-2 border-[#2d2a26] overflow-x-auto" dir="ltr">
-                        <ol className="list-decimal list-inside space-y-2">
-                          {report.investigation_log.map((log: string, i: number) => (
-                            <li key={i} className="opacity-90">{log}</li>
-                          ))}
-                        </ol>
-                      </div>
-                    </details>
-                  </div>
-                )}
+          {error && !isSubmitting && (
+            <div
+              className="mt-12 brutal-card p-8 fade-rise"
+              style={{ backgroundColor: "var(--v-scam-bg)", color: "var(--v-scam-ink)" }}
+              dir={isUrdu ? "rtl" : "ltr"}
+            >
+              <h3 className="text-xl font-serif font-bold uppercase tracking-widest">{t.errorTitle}</h3>
+              <p className={`mt-3 text-sm font-bold leading-relaxed ${isUrdu ? "text-right" : ""}`}>{error}</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button onClick={runScan} className="py-3 px-6 brutal-btn font-bold text-xs tracking-widest uppercase">
+                  {t.retryBtn}
+                </button>
+                <button onClick={startNewScan} className="py-3 px-6 brutal-btn font-bold text-xs tracking-widest uppercase">
+                  {t.newScanBtn}
+                </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {report && !isSubmitting && (
+            <>
+              <DossierReport data={report} lang={language} />
+              <div className={`mt-10 flex ${isUrdu ? "justify-start" : "justify-center"}`}>
+                <button onClick={startNewScan} className="py-4 px-8 brutal-btn font-bold text-sm tracking-widest uppercase">
+                  {t.newScanBtn}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </main>
 
       {/* Floating Settings Trigger */}
-      <button 
+      <button
         onClick={() => setIsSettingsOpen(true)}
         className="fixed bottom-8 right-8 w-14 h-14 brutal-card bg-[var(--card-bg)] flex items-center justify-center z-40 cursor-pointer hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_var(--shadow-color)] active:translate-y-1 active:translate-x-1 active:shadow-[0px_0px_0px_var(--shadow-color)] transition-all"
         aria-label="Open Settings"
@@ -302,12 +267,12 @@ export default function Home() {
       </button>
 
       {/* Settings Side-Panel */}
-      <div 
-        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 ${isSettingsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      <div
+        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 ${isSettingsOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         onClick={() => setIsSettingsOpen(false)}
       >
-        <div 
-          className={`absolute top-0 right-0 h-full w-80 bg-[var(--card-bg)] border-l-4 border-[var(--border-color)] shadow-[-8px_0px_0px_rgba(0,0,0,1)] p-6 transition-transform duration-300 ease-out flex flex-col ${isSettingsOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        <div
+          className={`absolute top-0 right-0 h-full w-80 bg-[var(--card-bg)] border-l-4 border-[var(--border-color)] shadow-[-8px_0px_0px_rgba(0,0,0,1)] p-6 transition-transform duration-300 ease-out flex flex-col ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-8 border-b-2 border-[var(--border-color)] pb-4">
@@ -324,15 +289,15 @@ export default function Home() {
             <div className="space-y-3">
               <label className="text-sm font-bold uppercase tracking-widest text-[var(--foreground)]">{t.languageLabel}</label>
               <div className="flex gap-2">
-                <button 
-                  onClick={() => handleLanguageChange('en')}
-                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${language === 'en' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+                <button
+                  onClick={() => handleLanguageChange("en")}
+                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${language === "en" ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]"}`}
                 >
                   English
                 </button>
-                <button 
-                  onClick={() => handleLanguageChange('ur')}
-                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] transition-colors font-[Noto_Nastaliq_Urdu,serif] ${language === 'ur' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+                <button
+                  onClick={() => handleLanguageChange("ur")}
+                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] transition-colors font-[Noto_Nastaliq_Urdu,serif] ${language === "ur" ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]"}`}
                 >
                   اردو
                 </button>
@@ -343,25 +308,25 @@ export default function Home() {
             <div className="space-y-3">
               <label className="text-sm font-bold uppercase tracking-widest text-[var(--foreground)]">{t.themeLabel}</label>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={toggleTheme}
                   disabled={!isDark}
-                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${!isDark ? 'bg-[var(--foreground)] text-[var(--background)]' : 'bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${!isDark ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]"}`}
                 >
                   {t.themeLight}
                 </button>
-                <button 
+                <button
                   onClick={toggleTheme}
                   disabled={isDark}
-                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${isDark ? 'bg-[var(--foreground)] text-[var(--background)]' : 'bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]'}`}
+                  className={`flex-1 py-2 font-bold border-2 border-[var(--border-color)] uppercase transition-colors ${isDark ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--background)]"}`}
                 >
                   {t.themeDark}
                 </button>
               </div>
             </div>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => setIsSettingsOpen(false)}
             className="w-full py-4 brutal-btn font-bold text-sm tracking-widest uppercase mt-auto"
           >
