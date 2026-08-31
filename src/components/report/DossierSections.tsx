@@ -257,34 +257,33 @@ export function TransparencySection({
   if (!discarded?.length) return null;
   return (
     <section id="transparency" className="fade-rise scroll-mt-6" style={{ animationDelay: "360ms" }}>
-      <details className="group border-2 border-[var(--border-color)] bg-[var(--card-bg)]">
-        <summary className="list-none cursor-pointer p-4 flex items-center justify-between gap-3 select-none hover:bg-[var(--background)] transition-colors">
-          <span className="text-sm font-bold uppercase tracking-widest">
-            {t.transparencyTitle}
-            <span className="ml-3 text-[11px] font-mono opacity-70 normal-case tracking-wider">
-              {t.discardedCount(discarded.length)}
-            </span>
+      <details className="group">
+        <summary className="list-none cursor-pointer flex items-center justify-between gap-3 select-none mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] opacity-50">
+            {t.transparencyTitle} · {t.discardedCount(discarded.length)}
           </span>
-          <ChevronIcon className="w-4 h-4 shrink-0 transition-transform group-open:rotate-180" />
+          <ChevronIcon className="w-3.5 h-3.5 shrink-0 opacity-40 transition-transform group-open:rotate-180" />
         </summary>
-        <div className="px-4 pb-4 space-y-2.5 border-t-2 border-[var(--border-color)] pt-4">
+        <div
+          dir="ltr"
+          className="bg-[var(--foreground)] text-[var(--background)] font-mono text-xs p-4 space-y-3"
+        >
           {discarded.map((d, i) => (
-            <div key={i} className="border-2 border-dashed border-[var(--border-color)] p-3">
+            <div key={i} className="border-b border-[var(--background)] border-opacity-10 pb-3 last:border-0 last:pb-0">
               <div className="flex items-start justify-between gap-3">
                 <a
                   href={d.source_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  dir="ltr"
-                  className="text-xs font-mono font-bold break-all hover:underline underline-offset-2"
+                  className="break-all hover:underline underline-offset-2 opacity-80"
                 >
                   {d.title || d.source_url}
                 </a>
-                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest border-2 border-[var(--border-color)] px-1.5 py-0.5">
+                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest border border-[var(--background)] border-opacity-30 px-1.5 py-0.5">
                   {t.reasonLabels[d.reason] ?? d.reason}
                 </span>
               </div>
-              {d.note && <p className="mt-1.5 text-xs opacity-70 leading-relaxed">{d.note}</p>}
+              {d.note && <p className="mt-1 opacity-50 leading-relaxed">{d.note}</p>}
             </div>
           ))}
         </div>

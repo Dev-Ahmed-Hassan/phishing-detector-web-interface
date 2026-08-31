@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "input_language": "english",
+    "target_entity": "Vanguard Apex Solutions",
+    "model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "total_facts": 2,
+    "total_red_flags": 2,
+    "total_links_of_interest": 4,
+    "total_discarded": 3
+  },
+  "executive_summary": {
+    "verdict": "suspicious",
+    "confidence_score": 24,
+    "primary_threat_vector": "Virtual Certificate Fee Trap & Mass Unvetted Offer Letters",
+    "one_sentence_takeaway": {
+      "en": "Vanguard Apex Solutions operates a mass virtual internship portal issuing automated offer letters without screening, but candidate reports highlight compulsory fee demands to release internship completion certificates.",
+      "ur": "وینگارڈ ایپیکس سلوشنز بغیر کسی تفتیش کے خودکار انٹرنشپ آفر لیٹر جاری کرتا ہے، لیکن امیدواروں کی رپورٹس سرٹیفکیٹ حاصل کرنے کے لیے لازمی فیس کے مطالبات کو ظاہر کرتی ہیں۔"
+    }
+  },
+  "verified_facts": [
+    {
+      "claim": "Vanguard Apex Solutions maintains a corporate directory listing with over 15,000 registered applicants.",
+      "evidence_status": "confirmed",
+      "snippet_quote": "Vanguard Apex Solutions — Online Learning & Virtual Internship Portal",
+      "source_url": "https://vanguardapex.tech/about",
+      "source_type": "website",
+      "search_intent": "Find official corporate website for 'Vanguard Apex Solutions'",
+      "weight": "high"
+    },
+    {
+      "claim": "Vanguard Apex's primary web domain vanguardapex.tech was registered in November 2024.",
+      "evidence_status": "confirmed",
+      "snippet_quote": "Domain: vanguardapex.tech | Created Date: 2024-11-12",
+      "source_url": "https://whois.example.com/vanguardapex.tech",
+      "source_type": "whois",
+      "search_intent": "Verify domain registration date for vanguardapex.tech",
+      "weight": "high"
+    }
+  ],
+  "red_flags": [
+    {
+      "flag": "Automated instant offer letters issued without technical screening or interviews",
+      "technical_basis": "Unvetted mass enrollment pipelines indicate a low-barrier lead generation scheme rather than genuine merit-based employment.",
+      "snippet_quote": "Applicants receive instant PDF offer letters within 5 minutes of submitting a form with no interview or assessment.",
+      "source_url": "https://forum.example.com/reviews/vanguard-apex",
+      "source_type": "community_forum",
+      "weight": "high"
+    },
+    {
+      "flag": "Mandatory verification fee required to unlock and issue official completion credentials",
+      "technical_basis": "Conditioning internship completion credentials on mandatory monetary payments is a primary indicator of a fee-trap certificate mill.",
+      "snippet_quote": "Upon completing assigned tasks, interns are instructed to pay a mandatory processing fee of $25 to receive their signed certificate.",
+      "source_url": "https://forum.example.com/reviews/vanguard-apex",
+      "source_type": "community_forum",
+      "weight": "critical"
+    }
+  ],
+  "links_of_interest": {
+    "Official Presence": [
+      {
+        "title": "Vanguard Apex Portal",
+        "url": "https://vanguardapex.tech",
+        "category": "Official Website",
+        "explanation": "The primary web portal used for candidate registration."
+      }
+    ],
+    "Community Reviews": [
+      {
+        "title": "Independent Safety Report for Vanguard Apex",
+        "url": "https://scam-detector.example.com/check/vanguardapex.tech",
+        "category": "Safety Evaluation",
+        "explanation": "Community review thread outlining mass offer letters and certificate fee complaints."
+      }
+    ]
+  },
+  "threat_vectors": [
+    {
+      "vector": "Certificate Mill & Fee Monetization",
+      "technical_grounding": "The entity issues automated unvetted offer letters and conditions internship completion credentials on mandatory secondary processing payments.",
+      "contributing_evidence": [
+        "https://forum.example.com/reviews/vanguard-apex"
+      ],
+      "severity": "high"
+    }
+  ],
+  "uncertainties": [
+    {
+      "what_is_missing": "Official corporate tax identification and registered office filings",
+      "why_it_matters": "Without registered business tax identifiers, entity authenticity cannot be verified against official corporate registries.",
+      "suggested_user_action": "Request official corporate registration numbers prior to accepting virtual assignments."
+    }
+  ],
+  "user_facing_report": {
+    "title": "Vanguard Apex OSINT Safety Report",
+    "summary_paragraph": "Vanguard Apex Solutions presents itself as an online learning and virtual internship portal. However, OSINT checks and candidate reports indicate an unvetted mass-enrollment pipeline where applicants receive instant acceptance letters, followed by compulsory fee demands to receive signed completion credentials.",
+    "what_we_checked": [
+      "Official domain registrations and WHOIS registration records",
+      "Community reviews and forum fraud warnings",
+      "Corporate registry filings and business tax verifications"
+    ],
+    "what_you_should_do": [
+      "Do not pay any money to secure or receive internship completion certificates.",
+      "Be skeptical of internship offers that require zero screening or technical interviews.",
+      "Verify company registration credentials on official government business registries."
+    ]
+  },
+  "discarded_evidence": [
+    {
+      "source_url": "https://example.com/vanguard-logistics-uk",
+      "title": "Vanguard Apex Logistics UK Ltd",
+      "reason": "entity_mismatch",
+      "note": "Refers to a registered UK freight logistics corporation, completely unrelated to the virtual internship portal."
+    },
+    {
+      "source_url": "https://example.com/apex-esports-team",
+      "title": "Vanguard Apex Gaming Clan",
+      "reason": "entity_mismatch",
+      "note": "Refers to a competitive esports gaming team based in California."
+    },
+    {
+      "source_url": "https://example.com/apex-sports-gear",
+      "title": "Apex Vanguard Athletic Equipment",
+      "reason": "unrelated",
+      "note": "Refers to a sporting goods manufacturing brand."
+    }
+  ],
+  "confidence_justification": "Base score: 50. Domain registered recently: -10. Automated unvetted offer letters: -11. Mandatory certificate fee demand: -15. Final score: 24."
+}

@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only mock pages (never ship)
+/src/app/mock*
+/src/app/mock/
+/src/app/mock1/
+/src/app/mock2/
+/src/app/mock3/
+/src/app/mock4/
+/src/app/mock5/
+/src/app/mock6/
+/src/app/mock7/
