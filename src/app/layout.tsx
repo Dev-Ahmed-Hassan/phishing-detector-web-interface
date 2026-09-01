@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <head>
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem } from "@/lib/report-types";
+import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem, ContactTrace } from "@/lib/report-types";
 import { getDomain, isUrduScript } from "@/lib/report-utils";
 import InvestigationProgress from "@/components/InvestigationProgress";
 
@@ -147,8 +147,37 @@ const MOCK_DATA: AnalyzeV2Response = {
     salary_or_fee_claims: "$25 Certification Fee",
     urls: ["https://vanguardapex.tech"],
     emails: ["support@vanguardapex.tech"],
-    phones: [],
+    phones: ["+92-300-1234567"],
   },
+  contact_traces: [
+    {
+      type: "phone",
+      value: "+92-300-1234567",
+      normalized: "03001234567",
+      search_status: "ok",
+      risk_signal: "flagged",
+      findings: [
+        {
+          source_url: "https://scam-detector.example.com/phone/03001234567",
+          source_title: "Scam Detector Phone Report",
+          snippet: "Multiple candidates reported this number as the contact for Vanguard Apex's certificate fee collection process.",
+        },
+        {
+          source_url: "https://forum.example.com/phone-warning-03001234567",
+          source_title: "Community Phone Warning Thread",
+          snippet: "This number was shared in refund complaints after users paid the $25 processing fee and received no certificate.",
+        },
+      ],
+    },
+    {
+      type: "email",
+      value: "support@vanguardapex.tech",
+      domain: "vanguardapex.tech",
+      whois_creation_date: "2024-11-12",
+      whois_lookup_status: "ok",
+      risk_signal: "new_domain",
+    },
+  ],
   timings: { extraction_s: 0.9, osint_collection_s: 6.2, judgment_s: 4.8, total_s: 11.9 },
 };
 
@@ -190,25 +219,37 @@ const translations = {
     sec02Title: "Verified Facts & Domain Records",
     sec02Badge: (n: number) => `[ ${n} CONFIRMED ]`,
 
-    sec03Title: "Primary Threat Vectors",
-    sec04Title: "Evidentiary Links Explorer",
-    sec05Title: "Unresolved Uncertainties",
+    sec03Title: "Contact Traces",
+    sec03Badge: (n: number) => `[ ${n} TRACES CHECKED ]`,
+    phoneTraceLabel: "Phone Trace",
+    emailTraceLabel: "Email Trace",
+    noFindingsLabel: "No public records found",
+    findingsLabel: "Findings",
+    domainRegisteredLabel: "Domain registered",
+    phoneRiskFlagged: "Flagged in scam reports",
+    phoneRiskClean: "No negative signals",
+    emailRiskNewDomain: "Recently registered domain",
+    emailRiskClean: "Domain has established history",
+
+    sec04Title: "Primary Threat Vectors",
+    sec05Title: "Evidentiary Links Explorer",
+    sec06Title: "Unresolved Uncertainties",
     missingEvidenceLabel: "Missing Evidence Item:",
     whyItMattersLabel: "Why it matters:",
     recActionLabel: "Recommended Action:",
 
-    sec06Title: "What You Should Do Next",
-    sec06Badge: (c: number, t: number) => `[ ${c} / ${t} COMPLETED ]`,
-    sec06ProgressTitle: "Action Checklist Progress",
-    sec06CompletePercent: (p: number) => `${p}% Complete`,
+    sec07Title: "What You Should Do Next",
+    sec07Badge: (c: number, t: number) => `[ ${c} / ${t} COMPLETED ]`,
+    sec07ProgressTitle: "Action Checklist Progress",
+    sec07CompletePercent: (p: number) => `${p}% Complete`,
 
-    sec07Title: "Transparency Log",
-    sec07Badge: (n: number) => `[ ${n} DISCARDED ]`,
-    sec07DiscardedCount: (n: number) => `${n} RESULT${n === 1 ? "" : "S"} DISCARDED`,
+    sec08Title: "Transparency Log",
+    sec08Badge: (n: number) => `[ ${n} DISCARDED ]`,
+    sec08DiscardedCount: (n: number) => `${n} RESULT${n === 1 ? "" : "S"} DISCARDED`,
 
-    sec08Title: "Pipeline Performance & System Logs",
-    sec08TotalBadge: (t: number) => `[ ${t}s TOTAL ]`,
-    sec08Header: "PIPELINE PERFORMANCE METRICS",
+    sec09Title: "Pipeline Performance & System Logs",
+    sec09TotalBadge: (t: number) => `[ ${t}s TOTAL ]`,
+    sec09Header: "PIPELINE PERFORMANCE METRICS",
     phase1: "Phase 1 (Entity Extraction):",
     phase2: "Phase 2 (Multi-Source Collection):",
     phase3: "Phase 3 (AI Judgment Engine):",
@@ -227,6 +268,7 @@ const translations = {
     tlHero: "Verdict & Case Overview",
     tlFlags: "Red Flags",
     tlFacts: "Verified Facts",
+    tlTraces: "Contact Traces",
     tlVectors: "Threat Vectors",
     tlLinks: "Evidentiary Links",
     tlUncertainties: "Uncertainties",
@@ -268,25 +310,37 @@ const translations = {
     sec02Title: "تصدیق شدہ حقائق اور ڈومین ریکارڈ",
     sec02Badge: (n: number) => `[ ${n} تصدیق شدہ ]`,
 
-    sec03Title: "بنیادی خطرے کے طریقے",
-    sec04Title: "ثبوتی لنکس کی تفصیلات",
-    sec05Title: "غیر حل شدہ غیر یقینی امور",
+    sec03Title: "رابطہ نشانات",
+    sec03Badge: (n: number) => `[ ${n} نشانات چیک کیے ]`,
+    phoneTraceLabel: "فون نمبر کی تفتیش",
+    emailTraceLabel: "ای میل کی تفتیش",
+    noFindingsLabel: "کوئی عوامی ریکارڈ نہیں ملا",
+    findingsLabel: "نتیجے",
+    domainRegisteredLabel: "ڈومین رجسٹرڈ",
+    phoneRiskFlagged: "اسکیم رپورٹس میں نشاندہی شدہ",
+    phoneRiskClean: "منفی اشارے نہیں",
+    emailRiskNewDomain: "حال ہی میں رجسٹرڈ ڈومین",
+    emailRiskClean: "ڈومین کی تاریخ موجود ہے",
+
+    sec04Title: "بنیادی خطرے کے طریقے",
+    sec05Title: "ثبوتی لنکس کی تفصیلات",
+    sec06Title: "غیر حل شدہ غیر یقینی امور",
     missingEvidenceLabel: "گم شدہ ثبوتی عنصر:",
     whyItMattersLabel: "یہ کیوں اہم ہے:",
     recActionLabel: "تجویز کردہ کارروائی:",
 
-    sec06Title: "آپ کو آگے کیا کرنا چاہیے",
-    sec06Badge: (c: number, t: number) => `[ ${c} / ${t} مکمل ]`,
-    sec06ProgressTitle: "کارروائی کی پیشرفت",
-    sec06CompletePercent: (p: number) => `${p}% مکمل`,
+    sec07Title: "آپ کو آگے کیا کرنا چاہیے",
+    sec07Badge: (c: number, t: number) => `[ ${c} / ${t} مکمل ]`,
+    sec07ProgressTitle: "کارروائی کی پیشرفت",
+    sec07CompletePercent: (p: number) => `${p}% مکمل`,
 
-    sec07Title: "شفافیت لاگ (رَد شدہ ڈیٹا)",
-    sec07Badge: (n: number) => `[ ${n} رَد شدہ ]`,
-    sec07DiscardedCount: (n: number) => `${n} نتائج رَد کیے گئے`,
+    sec08Title: "شفافیت لاگ (رَد شدہ ڈیٹا)",
+    sec08Badge: (n: number) => `[ ${n} رَد شدہ ]`,
+    sec08DiscardedCount: (n: number) => `${n} نتائج رَد کیے گئے`,
 
-    sec08Title: "سسٹم کی کارکردگی اور لاگز",
-    sec08TotalBadge: (t: number) => `[ کل وقت: ${t} سیکنڈ ]`,
-    sec08Header: "پائپ لائن کی کارکردگی کے میٹرکس",
+    sec09Title: "سسٹم کی کارکردگی اور لاگز",
+    sec09TotalBadge: (t: number) => `[ کل وقت: ${t} سیکنڈ ]`,
+    sec09Header: "پائپ لائن کی کارکردگی کے میٹرکس",
     phase1: "مرحلہ 1 (معلومات کا استخراج):",
     phase2: "مرحلہ 2 (مختلف ذرائع سے ڈیٹا کا حصول):",
     phase3: "مرحلہ 3 (مصنوعی ذہانت کا فیصلہ ساز انجن):",
@@ -305,6 +359,7 @@ const translations = {
     tlHero: "فیصلہ اور جائزہ",
     tlFlags: "خطرناک نشانیاں",
     tlFacts: "تصدیق شدہ حقائق",
+    tlTraces: "رابطہ نشانات",
     tlVectors: "خطرے کے طریقے",
     tlLinks: "ثبوتی لنکس",
     tlUncertainties: "غیر یقینی امور",
@@ -647,6 +702,137 @@ function CustomVerifiedFacts({ facts, t }: { facts: VerifiedFact[]; t: any }) {
 }
 
 // ============================================================================
+// CONTACT TRACES SECTION (PHONE / EMAIL OSINT)
+// ============================================================================
+function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any }) {
+  if (!traces?.length) return null;
+
+  return (
+    <section id="traces" className="space-y-6 scroll-mt-24">
+      <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
+        <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
+          <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
+            03
+          </StatusBadge>
+          {t.sec03Title}
+        </h3>
+        <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
+          {t.sec03Badge(traces.length)}
+        </span>
+      </div>
+
+      <div className="space-y-6">
+        {traces.map((trace, i) => {
+          if (trace.type === "phone") {
+            const statusBadgeClass =
+              trace.search_status === "ok"
+                ? "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40"
+                : trace.search_status === "no_results"
+                ? "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/40"
+                : "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40";
+
+            const riskBadgeClass =
+              trace.risk_signal === "flagged"
+                ? "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40"
+                : trace.risk_signal === "clean"
+                ? "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40"
+                : "bg-slate-100 text-slate-900 border-slate-300 dark:bg-slate-500/20 dark:text-slate-300 dark:border-slate-500/40";
+
+            return (
+              <article key={i} className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 shadow-[6px_6px_0_var(--shadow-color)] space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-60">
+                      {t.phoneTraceLabel}
+                    </span>
+                    <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--foreground)]">{trace.value}</h4>
+                    <p className="text-xs font-mono text-[var(--foreground)] opacity-70">{trace.normalized}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    <StatusBadge rx="0.4rem" className={`shrink-0 ${riskBadgeClass}`}>
+                      {trace.risk_signal === "flagged"
+                        ? t.phoneRiskFlagged
+                        : trace.risk_signal === "clean"
+                        ? t.phoneRiskClean
+                        : trace.risk_signal.toUpperCase()}
+                    </StatusBadge>
+                    <StatusBadge rx="0.4rem" className={`shrink-0 ${statusBadgeClass}`}>
+                      {trace.search_status.toUpperCase()}
+                    </StatusBadge>
+                  </div>
+                </div>
+
+                {trace.findings.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] opacity-60">{t.findingsLabel}</p>
+                    {trace.findings.map((f, fi) => (
+                      <div key={fi} className="border-2 border-[var(--border-color)] bg-[var(--background)] p-4 space-y-2">
+                        {f.snippet && (
+                          <p className="text-sm sm:text-base text-[var(--foreground)] leading-relaxed font-serif italic">
+                            &ldquo;{f.snippet}&rdquo;
+                          </p>
+                        )}
+                        <a
+                          href={f.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+                        >
+                          {t.sourceEvidenceLabel} {getDomain(f.source_url)} &rsaquo;
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm font-mono text-[var(--foreground)] opacity-70 border-2 border-dashed border-[var(--border-color)] p-4">
+                    {t.noFindingsLabel}
+                  </p>
+                )}
+              </article>
+            );
+          }
+
+          const riskBadgeClass =
+            trace.risk_signal === "new_domain" || trace.risk_signal === "suspicious"
+              ? "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/40"
+              : trace.risk_signal === "clean"
+              ? "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40"
+              : "bg-slate-100 text-slate-900 border-slate-300 dark:bg-slate-500/20 dark:text-slate-300 dark:border-slate-500/40";
+
+          return (
+            <article key={i} className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 shadow-[6px_6px_0_var(--shadow-color)] space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-60">
+                    {t.emailTraceLabel}
+                  </span>
+                  <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--foreground)]">{trace.value}</h4>
+                  <p className="text-xs font-mono text-[var(--foreground)] opacity-70">{trace.domain}</p>
+                </div>
+                <StatusBadge rx="0.4rem" className={`shrink-0 ${riskBadgeClass}`}>
+                  {trace.risk_signal === "new_domain"
+                    ? t.emailRiskNewDomain
+                    : trace.risk_signal === "clean"
+                    ? t.emailRiskClean
+                    : trace.risk_signal.toUpperCase()}
+                </StatusBadge>
+              </div>
+
+              {trace.whois_lookup_status === "ok" && trace.whois_creation_date && (
+                <p className="text-sm sm:text-base text-[var(--foreground)] border-2 border-[var(--border-color)] bg-[var(--background)] p-4 font-mono">
+                  <span className="font-bold uppercase tracking-wider text-[11px] opacity-60 block mb-1">{t.domainRegisteredLabel}</span>
+                  {trace.whois_creation_date}
+                </p>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
 // INTERACTIVE LINKED ACTION CHECKLIST COMPONENT
 // ============================================================================
 function InteractiveActionChecklist({ items, t }: { items: string[]; t: any }) {
@@ -670,20 +856,20 @@ function InteractiveActionChecklist({ items, t }: { items: string[]; t: any }) {
       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-            06
+            07
           </StatusBadge>
-          {t.sec06Title}
+          {t.sec07Title}
         </h3>
         <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
-          {t.sec06Badge(completedCount, total)}
+          {t.sec07Badge(completedCount, total)}
         </span>
       </div>
 
       <div className="border-4 border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-8 space-y-5 shadow-[6px_6px_0_var(--shadow-color)]">
         <div className="space-y-2 pb-2 border-b-2 border-dashed border-[var(--border-color)]">
           <div className="flex items-center justify-between text-xs font-mono font-bold uppercase tracking-wider text-[var(--foreground)]">
-            <span>{t.sec06ProgressTitle}</span>
-            <span>{t.sec06CompletePercent(progressPercent)}</span>
+            <span>{t.sec07ProgressTitle}</span>
+            <span>{t.sec07CompletePercent(progressPercent)}</span>
           </div>
           <div className="w-full bg-[var(--background)] h-3 border-2 border-[var(--border-color)] overflow-hidden rounded-full p-0.5">
             <div
@@ -755,12 +941,12 @@ function TransparencyLogSection({ discarded, t }: { discarded: DiscardedItem[]; 
       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-            07
+            08
           </StatusBadge>
-          {t.sec07Title}
+          {t.sec08Title}
         </h3>
         <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
-          {t.sec07Badge(discarded.length)}
+          {t.sec08Badge(discarded.length)}
         </span>
       </div>
 
@@ -770,9 +956,9 @@ function TransparencyLogSection({ discarded, t }: { discarded: DiscardedItem[]; 
           className="w-full p-4 sm:p-5 bg-[var(--card-bg)] text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[var(--background)] transition-colors border-b-2 border-[var(--border-color)]"
         >
           <div className="flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm font-bold uppercase tracking-widest text-[var(--foreground)]">
-            <span>{t.sec07Title}</span>
+            <span>{t.sec08Title}</span>
             <span className="text-[11px] opacity-60 font-semibold">
-              {t.sec07DiscardedCount(discarded.length)}
+              {t.sec08DiscardedCount(discarded.length)}
             </span>
           </div>
           <span className="font-mono text-sm font-bold text-[var(--foreground)] shrink-0">
@@ -835,12 +1021,12 @@ function PipelineMetricsSection({ timings, t }: { timings?: any; t: any }) {
       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-            08
+            09
           </StatusBadge>
-          {t.sec08Title}
+          {t.sec09Title}
         </h3>
         <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
-          {t.sec08TotalBadge(timings.total_s)}
+          {t.sec09TotalBadge(timings.total_s)}
         </span>
       </div>
 
@@ -851,7 +1037,7 @@ function PipelineMetricsSection({ timings, t }: { timings?: any; t: any }) {
             <polyline points="12 6 12 16 14" />
           </svg>
           <h4 className="font-mono font-bold text-xs sm:text-sm uppercase tracking-widest text-[var(--foreground)]">
-            {t.sec08Header}
+            {t.sec09Header}
           </h4>
         </div>
 
@@ -913,12 +1099,13 @@ function RightTimelineTracker({ activeSection, t }: { activeSection: string; t: 
     { id: "hero", num: "00", name: t.tlHero },
     { id: "flags", num: "01", name: t.tlFlags },
     { id: "facts", num: "02", name: t.tlFacts },
-    { id: "vectors", num: "03", name: t.tlVectors },
-    { id: "links", num: "04", name: t.tlLinks },
-    { id: "uncertainties", num: "05", name: t.tlUncertainties },
-    { id: "actions", num: "06", name: t.tlActions },
-    { id: "transparency", num: "07", name: t.tlTransparency },
-    { id: "logs", num: "08", name: t.tlLogs },
+    { id: "traces", num: "03", name: t.tlTraces },
+    { id: "vectors", num: "04", name: t.tlVectors },
+    { id: "links", num: "05", name: t.tlLinks },
+    { id: "uncertainties", num: "06", name: t.tlUncertainties },
+    { id: "actions", num: "07", name: t.tlActions },
+    { id: "transparency", num: "08", name: t.tlTransparency },
+    { id: "logs", num: "09", name: t.tlLogs },
   ];
 
   const activeIdx = Math.max(0, sections.findIndex((s) => s.id === activeSection));
@@ -1329,7 +1516,7 @@ export default function Home() {
   useEffect(() => {
     if (!report) return;
 
-    const sectionIds = ["hero", "flags", "facts", "vectors", "links", "uncertainties", "actions", "transparency", "logs"];
+    const sectionIds = ["hero", "flags", "facts", "traces", "vectors", "links", "uncertainties", "actions", "transparency", "logs"];
 
     const handleScroll = () => {
       const viewportHeight = window.innerHeight;
@@ -1799,14 +1986,16 @@ export default function Home() {
 
                   <CustomVerifiedFacts facts={judgeReport.verified_facts ?? []} t={t} />
 
+                  <ContactTracesSection traces={report.contact_traces ?? []} t={t} />
+
                   {judgeReport.threat_vectors && judgeReport.threat_vectors.length > 0 && (
                     <div id="vectors" className="space-y-6 scroll-mt-24">
                       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
                         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
                           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-                            03
+                            04
                           </StatusBadge>
-                          {t.sec03Title}
+                          {t.sec04Title}
                         </h3>
                       </div>
                       {judgeReport.threat_vectors.map((v, i) => {
@@ -1838,9 +2027,9 @@ export default function Home() {
                       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
                         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
                           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-                            04
+                            05
                           </StatusBadge>
-                          {t.sec04Title}
+                          {t.sec05Title}
                         </h3>
                       </div>
                       {Object.entries(judgeReport.links_of_interest).map(([category, items]) => (
@@ -1873,9 +2062,9 @@ export default function Home() {
                       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
                         <h3 className="font-serif font-bold text-2xl sm:text-3xl tracking-tight text-[var(--foreground)] flex items-center gap-3">
                           <StatusBadge rx="0.5rem" className="bg-[var(--accent-color)] text-[var(--accent-text)] px-3.5 py-2 text-sm sm:text-base font-bold">
-                            05
+                            06
                           </StatusBadge>
-                          {t.sec05Title}
+                          {t.sec06Title}
                         </h3>
                       </div>
                       {judgeReport.uncertainties.map((u, i) => (

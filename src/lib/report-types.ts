@@ -103,10 +103,35 @@ export interface Timings {
   total_s?: number;
 }
 
+export interface PhoneTrace {
+  type: "phone";
+  value: string;
+  normalized: string;
+  search_status: "ok" | "no_results" | "failed";
+  findings: {
+    source_url: string;
+    source_title?: string;
+    snippet?: string;
+  }[];
+  risk_signal: "flagged" | "clean" | "unknown";
+}
+
+export interface EmailTrace {
+  type: "email";
+  value: string;
+  domain: string;
+  whois_creation_date?: string;
+  whois_lookup_status: "ok" | "failed";
+  risk_signal: "new_domain" | "suspicious" | "clean" | "unknown";
+}
+
+export type ContactTrace = PhoneTrace | EmailTrace;
+
 export interface AnalyzeV2Response {
   status: string;
   report: JudgeReport | null;
   message?: string;
   extracted_entities?: ExtractedEntities;
+  contact_traces?: ContactTrace[];
   timings?: Timings;
 }
