@@ -14,8 +14,40 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Verify | Phishing Detector",
-  description: "Detect malicious job offers and phishing attempts.",
+  title: "Naukri Nigran • AI Anti-Scam Intelligence & Job Scam Detector",
+  description: "Autonomous OSINT Phishing & Job Scam Investigator. Paste suspicious WhatsApp messages, offer letters, or voice notes to instantly detect fake internships and fee traps.",
+  authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
+  creator: "Ahmed Hassan",
+  publisher: "Naukri Nigran Intelligence",
+  metadataBase: new URL("https://naukri-nigran.vercel.app"),
+  keywords: [
+    "Phishing Detector",
+    "WhatsApp Scam Scanner",
+    "Job Scam Verification",
+    "Anti-Scam OSINT",
+    "Roman Urdu Scam Detector",
+    "Pakistan Job Safety",
+    "Naukri Nigran",
+    "Ahmed Hassan"
+  ],
+  openGraph: {
+    title: "Naukri Nigran • Anti-Scam Intelligence Engine",
+    description: "Autonomous Multi-Agent OSINT Phishing & Job Scam Investigator. Verify job offer letters, WhatsApp recruitment messages, and fee traps in real-time.",
+    url: "https://naukri-nigran.vercel.app",
+    siteName: "Naukri Nigran",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Naukri Nigran • AI Anti-Scam Intelligence Engine",
+    description: "Detect fake job offers, fee traps, and WhatsApp recruitment scams with autonomous OSINT verification.",
+    creator: "@ahmedhassan",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
