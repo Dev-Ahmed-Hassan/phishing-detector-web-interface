@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
   creator: "Ahmed Hassan",
   publisher: "Naukri Nigran Intelligence",
-  metadataBase: new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://phishing-detector-web-interface.vercel.app"),
+  metadataBase: new URL("https://naukrinigran.vercel.app"),
   keywords: [
     "Phishing Detector",
     "WhatsApp Scam Scanner",
