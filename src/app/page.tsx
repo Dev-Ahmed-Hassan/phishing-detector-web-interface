@@ -1258,11 +1258,29 @@ function ThemeSettingsModal({
 }
 
 // ============================================================================
+// COOKIE & LOCAL STORAGE PERSISTENCE HELPERS
+// ============================================================================
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+function setCookie(name: string, value: string, days = 365) {
+  if (typeof document === "undefined") return;
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  try {
+    localStorage.setItem(name, value);
+  } catch (e) {}
+}
+
+// ============================================================================
 // MAIN PAGE COMPONENT
 // ============================================================================
 export default function Home() {
   const [text, setText] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [report, setReport] = useState<AnalyzeV2Response | null>(MOCK_DATA);
   const [notice, setNotice] = useState<string | null>(null);
@@ -1275,30 +1293,38 @@ export default function Home() {
   const [palette, setPalette] = useState<string>("mono");
   const [activeSection, setActiveSection] = useState<string>("hero");
 
+  // Hydrate mode, palette, and language from Cookie / LocalStorage on mount
   useEffect(() => {
-    const savedPalette = localStorage.getItem("app_palette") || "mono";
+    // 1. Restore Mode (Dark / Light)
+    const savedMode = getCookie("app_mode") || localStorage.getItem("app_mode");
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldBeDark = savedMode ? savedMode === "dark" : prefersDark;
+
+    document.documentElement.classList.toggle("dark", shouldBeDark);
+    setIsDark(shouldBeDark);
+
+    // 2. Restore Palette Theme
+    const savedPalette = getCookie("app_palette") || localStorage.getItem("app_palette") || "mono";
     setPalette(savedPalette);
     document.documentElement.setAttribute("data-palette", savedPalette);
+
+    // 3. Restore Language
+    const savedLang = (getCookie("app_language") || localStorage.getItem("app_language")) as Lang;
+    if (savedLang && (savedLang === "en" || savedLang === "ur")) {
+      setLanguage(savedLang);
+    }
   }, []);
 
   const handlePaletteChange = (p: string) => {
     setPalette(p);
     document.documentElement.setAttribute("data-palette", p);
-    localStorage.setItem("app_palette", p);
+    setCookie("app_palette", p);
   };
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const t = translations[language];
   const isUrdu = language === "ur";
-
-  useEffect(() => {
-    const savedLang = localStorage.getItem("app_language") as Lang;
-    if (savedLang && (savedLang === "en" || savedLang === "ur")) {
-      setLanguage(savedLang);
-    }
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
 
   useEffect(() => {
     if (!report) return;
@@ -1357,21 +1383,41 @@ export default function Home() {
 
   const handleLanguageChange = (lang: Lang) => {
     setLanguage(lang);
-    localStorage.setItem("app_language", lang);
+    setCookie("app_language", lang);
   };
 
   const toggleTheme = () => {
     const newTheme = !document.documentElement.classList.contains("dark");
-    if (!document.startViewTransition) {
+    const modeStr = newTheme ? "dark" : "light";
+
+    const applyTheme = () => {
       document.documentElement.classList.toggle("dark", newTheme);
       setIsDark(newTheme);
+      setCookie("app_mode", modeStr);
+    };
+
+    if (!document.startViewTransition) {
+      applyTheme();
       return;
     }
 
     document.startViewTransition(() => {
-      document.documentElement.classList.toggle("dark", newTheme);
-      setIsDark(newTheme);
+      applyTheme();
     });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    const selected = Array.from(e.target.files);
+    setFiles((prev) => {
+      const combined = [...prev, ...selected];
+      return combined.slice(0, 3);
+    });
+    e.target.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const runScan = async () => {
@@ -1380,10 +1426,13 @@ export default function Home() {
     setNotice(null);
     setError(null);
 
-    if (text.trim() || file) {
+    if (text.trim() || files.length > 0) {
       const formData = new FormData();
       if (text) formData.append("text", text);
-      if (file) formData.append("file", file);
+      if (files.length > 0) {
+        formData.append("file", files[0]);
+        files.forEach((f) => formData.append("files", f));
+      }
       formData.append("user_id", "web_user_demo");
 
       try {
@@ -1425,7 +1474,7 @@ export default function Home() {
     setNotice(null);
     setError(null);
     setText("");
-    setFile(null);
+    setFiles([]);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -1604,17 +1653,76 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-base sm:text-lg font-bold text-[var(--foreground)] uppercase tracking-wider block">
-              {t.evidenceLabel}
-            </label>
-            <div className="brutal-input p-3 flex items-center bg-[var(--input-bg)] border-2 border-[var(--border-color)]">
-              <input
-                type="file"
-                className={`w-full text-base text-[var(--foreground)] file:py-2.5 file:px-5 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-base file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? "file:ml-4" : "file:mr-4"}`}
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                disabled={isSubmitting}
-              />
+            <div className="flex items-center justify-between">
+              <label className="text-base sm:text-lg font-bold text-[var(--foreground)] uppercase tracking-wider block">
+                {t.evidenceLabel}
+              </label>
+              <span className="text-xs font-mono font-bold text-[var(--foreground)] opacity-70">
+                ({files.length} / 3 {isUrdu ? "فائلیں" : "FILES"})
+              </span>
             </div>
+
+            {/* Input file box (visible when files < 3) */}
+            {files.length < 3 && (
+              <div className="brutal-input p-3 flex items-center bg-[var(--input-bg)] border-2 border-[var(--border-color)]">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,application/pdf,audio/*"
+                  className={`w-full text-base text-[var(--foreground)] file:py-2.5 file:px-5 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-base file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? "file:ml-4" : "file:mr-4"}`}
+                  onChange={handleFileChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+            )}
+
+            {/* Rendered selected file chips with red cross buttons */}
+            {files.length > 0 && (
+              <div className="space-y-2 pt-1">
+                {files.map((f, idx) => {
+                  const fileSizeMB = (f.size / (1024 * 1024)).toFixed(2);
+                  const isImage = f.type.startsWith("image/");
+                  const isPdf = f.type.includes("pdf");
+                  const isAudio = f.type.startsWith("audio/");
+
+                  let fileIcon = "📁";
+                  if (isImage) fileIcon = "🖼️";
+                  else if (isPdf) fileIcon = "📄";
+                  else if (isAudio) fileIcon = "🎵";
+
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-3 border-2 border-[var(--border-color)] bg-[var(--card-bg)] shadow-[2px_2px_0_var(--shadow-color)] transition-all"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 pr-2">
+                        <span className="text-xl shrink-0">{fileIcon}</span>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-mono font-bold text-[var(--foreground)] truncate">
+                            {f.name}
+                          </p>
+                          <p className="text-[10px] font-mono text-[var(--foreground)] opacity-60">
+                            {fileSizeMB} MB &bull; {f.type || "FILE"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Red Cross Removal Button */}
+                      <button
+                        type="button"
+                        onClick={() => removeFile(idx)}
+                        disabled={isSubmitting}
+                        className="w-7 h-7 rounded border-2 border-rose-500 bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white font-bold text-xs flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                        title={isUrdu ? "فائل ہٹائیں" : "Remove file"}
+                        aria-label={`Remove ${f.name}`}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <button
