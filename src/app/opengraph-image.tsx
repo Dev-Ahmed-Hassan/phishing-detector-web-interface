@@ -16,87 +16,223 @@ export default async function Image() {
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          backgroundColor: "#0d0e11",
-          padding: "60px 70px",
+          backgroundColor: "#F5F5F7",
+          padding: "42px 58px",
           fontFamily: "sans-serif",
-          color: "#f5f5f7",
-          border: "12px solid #22252c",
+          color: "#09090B",
         }}
       >
-        {/* Top Header Badge */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div
-            style={{
-              backgroundColor: "#e11d48",
-              color: "#ffffff",
-              padding: "8px 18px",
-              fontWeight: 900,
-              fontSize: "20px",
-              letterSpacing: "2px",
-              textTransform: "uppercase",
-              borderRadius: "4px",
-            }}
-          >
-            NAUKRI NIGRAN
-          </div>
-          <div
-            style={{
-              color: "#94a3b8",
-              fontSize: "18px",
-              fontWeight: 700,
-              letterSpacing: "1.5px",
-              textTransform: "uppercase",
-            }}
-          >
-            • ANTI-SCAM INTELLIGENCE ENGINE
-          </div>
-        </div>
-
-        {/* Hero Title & Subtitle */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "950px" }}>
-          <div
-            style={{
-              fontSize: "56px",
-              fontWeight: 900,
-              lineHeight: 1.1,
-              letterSpacing: "-1px",
-              color: "#ffffff",
-            }}
-          >
-            Autonomous AI Job Scam & Phishing Detector
-          </div>
-          <div
-            style={{
-              fontSize: "26px",
-              color: "#cbd5e1",
-              lineHeight: 1.4,
-              fontWeight: 400,
-            }}
-          >
-            Instant OSINT verification for WhatsApp recruitment offers, fake virtual internships, and certificate fee traps.
-          </div>
-        </div>
-
-        {/* Bottom Metadata Bar */}
+        {/* Top Nav Bar */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            borderTop: "2px dashed #334155",
-            paddingTop: "30px",
+            backgroundColor: "#FFFFFF",
+            border: "3px solid #09090B",
+            boxShadow: "5px 5px 0px #09090B",
+            padding: "14px 22px",
+            marginBottom: "34px",
           }}
         >
-          <div style={{ display: "flex", gap: "24px", fontSize: "18px", fontWeight: 700, color: "#e2e8f0" }}>
-            <span>⚡ Multi-Agent OSINT</span>
-            <span>🌐 Roman Urdu Support</span>
-            <span>🛡️ Live Verification</span>
+          <div
+            style={{
+              fontSize: "26px",
+              fontWeight: 900,
+              fontFamily: "serif",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Naukri Nigran
           </div>
-          <div style={{ fontSize: "18px", fontWeight: 800, color: "#f43f5e" }}>
-            ENGINEERED BY AHMED HASSAN ↗
+
+          <div
+            style={{
+              display: "flex",
+              gap: "22px",
+              fontSize: "13px",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.6px",
+            }}
+          >
+            <span>Scanner</span>
+            <span>Demo Cases</span>
+            <span>WhatsApp Bot</span>
+            <span>Extension</span>
+            <span>Portfolio ›</span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <div
+              style={{
+                border: "2px solid #09090B",
+                padding: "7px 12px",
+                fontSize: "12px",
+                fontWeight: 800,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              EN
+            </div>
+            <div
+              style={{
+                border: "2px solid #09090B",
+                padding: "7px 12px",
+                fontSize: "12px",
+                fontWeight: 800,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              THEMES
+            </div>
+            <div
+              style={{
+                border: "2px solid #09090B",
+                padding: "7px 12px",
+                fontSize: "12px",
+                fontWeight: 800,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              ☾
+            </div>
+          </div>
+        </div>
+
+        {/* Hero Headline */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "6px" }}>
+          <div
+            style={{
+              fontSize: "54px",
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: "-1.5px",
+              fontFamily: "serif",
+              color: "#09090B",
+            }}
+          >
+            VERIFY AUTHENTICITY
+          </div>
+          <div
+            style={{
+              fontSize: "21px",
+              color: "#3F3F46",
+              lineHeight: 1.4,
+              fontWeight: 500,
+              maxWidth: "720px",
+            }}
+          >
+            Paste a suspicious message or upload a screenshot for editorial-grade analysis.
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            height: "3px",
+            backgroundColor: "#09090B",
+            width: "100%",
+            margin: "22px 0 20px 0",
+          }}
+        />
+
+        {/* Form UI */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px", width: "100%" }}>
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: 900,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Message Content
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "#FFFFFF",
+              border: "3px solid #09090B",
+              boxShadow: "5px 5px 0px #09090B",
+              padding: "18px 22px",
+              fontSize: "18px",
+              color: "#A1A1AA",
+              minHeight: "72px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Paste the suspicious text here...
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "4px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: 900,
+                textTransform: "uppercase",
+                letterSpacing: "1px",
+              }}
+            >
+              Evidence (Screenshot / Audio)
+            </div>
+            <div style={{ fontSize: "13px", color: "#71717A", fontWeight: 700 }}>
+              (0 / 3 FILES)
+            </div>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "#FFFFFF",
+              border: "3px solid #09090B",
+              boxShadow: "5px 5px 0px #09090B",
+              padding: "14px 20px",
+              fontSize: "16px",
+              color: "#71717A",
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+            }}
+          >
+            <div
+              style={{
+                border: "2px solid #09090B",
+                padding: "8px 16px",
+                fontSize: "13px",
+                fontWeight: 800,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              Choose Files
+            </div>
+            <span>No file chosen</span>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "#0077B6",
+              color: "#FFFFFF",
+              border: "3px solid #09090B",
+              boxShadow: "5px 5px 0px #09090B",
+              padding: "18px",
+              textAlign: "center",
+              fontSize: "19px",
+              fontWeight: 900,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              marginTop: "6px",
+            }}
+          >
+            Scan For Scams
           </div>
         </div>
       </div>
