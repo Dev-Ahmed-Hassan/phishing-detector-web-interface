@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
   creator: "Ahmed Hassan",
   publisher: "Naukri Nigran Intelligence",
-  metadataBase: new URL("https://naukri-nigran.vercel.app"),
+  metadataBase: new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://phishing-detector-web-interface.vercel.app"),
   keywords: [
     "Phishing Detector",
     "WhatsApp Scam Scanner",
@@ -33,8 +33,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Naukri Nigran • Anti-Scam Intelligence Engine",
     description: "Autonomous Multi-Agent OSINT Phishing & Job Scam Investigator. Verify job offer letters, WhatsApp recruitment messages, and fee traps in real-time.",
-    url: "https://naukri-nigran.vercel.app",
     siteName: "Naukri Nigran",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Naukri Nigran • AI Anti-Scam Intelligence Engine",
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
@@ -42,6 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Naukri Nigran • AI Anti-Scam Intelligence Engine",
     description: "Detect fake job offers, fee traps, and WhatsApp recruitment scams with autonomous OSINT verification.",
+    images: ["/opengraph-image"],
     creator: "@ahmedhassan",
   },
   robots: {
