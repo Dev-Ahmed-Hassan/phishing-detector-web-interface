@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 export const alt = "Naukri Nigran • AI Anti-Scam OSINT Scanner";
 export const size = {
   width: 1200,
