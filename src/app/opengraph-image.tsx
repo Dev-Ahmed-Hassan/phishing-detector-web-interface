@@ -8,18 +8,10 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-  // Fetch Playfair Display 900 TTF font buffer so Satori renders the exact luxury serif font on Vercel serverless
-  let playfairData: ArrayBuffer | null = null;
-  try {
-    const res = await fetch(
-      "https://fonts.gstatic.com/s/playfairdisplay/v37/nuFvD-vYSZviVYUb_RJ3ijvryePtLCAAG50.ttf"
-    );
-    if (res.ok) {
-      playfairData = await res.arrayBuffer();
-    }
-  } catch (e) {
-    console.error("Failed to load custom Playfair font for OG image", e);
-  }
+  // Fetch Playfair Display 900 TTF from JSDelivr Fontsource CDN (100% CORS & Serverless friendly)
+  const fontData = await fetch(
+    "https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-900-normal.ttf"
+  ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
@@ -90,7 +82,7 @@ export default async function Image() {
             style={{
               fontSize: "96px",
               fontWeight: 900,
-              fontFamily: playfairData ? '"Playfair Display", serif' : "serif",
+              fontFamily: '"Playfair Display"',
               letterSpacing: "-2.5px",
               color: "#F8FAFC",
               margin: 0,
@@ -247,16 +239,14 @@ export default async function Image() {
     ),
     {
       ...size,
-      fonts: playfairData
-        ? [
-            {
-              name: "Playfair Display",
-              data: playfairData,
-              style: "normal",
-              weight: 900,
-            },
-          ]
-        : undefined,
+      fonts: [
+        {
+          name: "Playfair Display",
+          data: fontData,
+          style: "normal",
+          weight: 900,
+        },
+      ],
     }
   );
 }
