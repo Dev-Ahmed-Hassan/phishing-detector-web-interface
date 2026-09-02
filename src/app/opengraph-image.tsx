@@ -8,7 +8,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-  // Fetch Playfair Display (for main title), Inter (for subtext), and JetBrains Mono (for badges) from JSDelivr
+  // Fetch Playfair Display (for main title), Inter (for subtext), and JetBrains Mono (for tagline) from JSDelivr
   const [playfairFont, interFont, monoFont] = await Promise.all([
     fetch("https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-900-normal.ttf").then((res) =>
       res.arrayBuffer()
@@ -29,70 +29,80 @@ export default async function Image() {
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#121316",
-          color: "#F8FAFC",
-          padding: "54px 64px",
+          justifyContent: "center",
+          backgroundColor: "#0F0F12",
+          color: "#FAFAFA",
+          padding: "76px 88px",
           fontFamily: '"Inter", sans-serif',
-          border: "4px solid #28292E",
+          border: "4px solid #27272A",
           boxSizing: "border-box",
+          position: "relative",
         }}
       >
-        {/* TOP BRAND BADGE BAR */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-          <div
-            style={{
-              padding: "8px 20px",
-              backgroundColor: "#3B82F6",
-              color: "#FFFFFF",
-              fontFamily: '"JetBrains Mono", monospace',
-              fontWeight: 800,
-              fontSize: "14px",
-              letterSpacing: "2.5px",
-              boxShadow: "3px 3px 0px #000000",
-              textTransform: "uppercase",
-            }}
-          >
-            AGENTIC OSINT ENGINE
-          </div>
+        {/* CORNER FRAME BRACKETS (TACTICAL AMBER GOLD) */}
+        <div
+          style={{
+            position: "absolute",
+            top: "36px",
+            left: "36px",
+            width: "36px",
+            height: "36px",
+            borderLeft: "4px solid #F59E0B",
+            borderTop: "4px solid #F59E0B",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "36px",
+            right: "36px",
+            width: "36px",
+            height: "36px",
+            borderRight: "4px solid #F59E0B",
+            borderTop: "4px solid #F59E0B",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "36px",
+            left: "36px",
+            width: "36px",
+            height: "36px",
+            borderLeft: "4px solid #F59E0B",
+            borderBottom: "4px solid #F59E0B",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "36px",
+            right: "36px",
+            width: "36px",
+            height: "36px",
+            borderRight: "4px solid #F59E0B",
+            borderBottom: "4px solid #F59E0B",
+          }}
+        />
 
+        {/* CENTER PURE CONTENT CORE */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "28px",
+            width: "100%",
+            maxWidth: "1040px",
+          }}
+        >
+          {/* Main Title */}
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "10px 22px",
-              backgroundColor: "#1A1B20",
-              border: "2px solid #28292E",
-              boxShadow: "4px 4px 0px #3B82F6",
-              fontSize: "14px",
-              fontFamily: '"JetBrains Mono", monospace',
-              fontWeight: 800,
-              color: "#F8FAFC",
-              letterSpacing: "1px",
-            }}
-          >
-            <div
-              style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "9999px",
-                backgroundColor: "#3B82F6",
-              }}
-            />
-            <span>REAL-TIME SCAM INVESTIGATION</span>
-          </div>
-        </div>
-
-        {/* CENTER MAIN HIGHLIGHT: NAUKRI NIGRAN */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "1050px" }}>
-          <div
-            style={{
-              fontSize: "96px",
+              fontSize: "128px",
               fontWeight: 900,
               fontFamily: '"Playfair Display", serif',
-              letterSpacing: "-2.5px",
-              color: "#F8FAFC",
+              letterSpacing: "-3px",
+              color: "#FAFAFA",
               margin: 0,
               lineHeight: 0.95,
             }}
@@ -100,147 +110,34 @@ export default async function Image() {
             Naukri Nigran
           </div>
 
+          {/* Primary Tagline (Tactical Amber Gold) */}
           <div
             style={{
-              fontSize: "26px",
+              fontSize: "28px",
               fontWeight: 800,
               fontFamily: '"JetBrains Mono", monospace',
-              color: "#3B82F6",
-              letterSpacing: "1.5px",
+              color: "#F59E0B",
+              letterSpacing: "2px",
               textTransform: "uppercase",
+              lineHeight: 1.25,
             }}
           >
             VERIFY AUTHENTICITY OF JOBS, EMAILS & MESSAGES
           </div>
 
+          {/* Sub-Tagline Description */}
           <div
             style={{
-              fontSize: "24px",
-              color: "#94A3B8",
+              fontSize: "25px",
+              color: "#A1A1AA",
               margin: 0,
-              lineHeight: 1.4,
+              lineHeight: 1.5,
               fontWeight: 500,
-              maxWidth: "920px",
+              maxWidth: "960px",
               fontFamily: '"Inter", sans-serif',
             }}
           >
             Autonomous OSINT agent verifying WhatsApp job offers, fake virtual internships, offer letters, and certificate fee traps.
-          </div>
-        </div>
-
-        {/* BOTTOM INPUT MODES */}
-        <div
-          style={{
-            paddingTop: "24px",
-            borderTop: "3px solid #28292E",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            fontFamily: '"JetBrains Mono", monospace',
-            fontSize: "13px",
-            fontWeight: 800,
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            {/* Input Chip 1 */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#1A1B20",
-                border: "2px solid #28292E",
-                boxShadow: "3px 3px 0px #000000",
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: "#3B82F6",
-                  color: "#FFFFFF",
-                  padding: "2px 8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                }}
-              >
-                01
-              </div>
-              <div style={{ color: "#F8FAFC" }}>MESSAGES & ROMAN URDU</div>
-            </div>
-
-            {/* Input Chip 2 */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#1A1B20",
-                border: "2px solid #28292E",
-                boxShadow: "3px 3px 0px #000000",
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: "#3B82F6",
-                  color: "#FFFFFF",
-                  padding: "2px 8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                }}
-              >
-                02
-              </div>
-              <div style={{ color: "#F8FAFC" }}>OFFER LETTERS & PDFS</div>
-            </div>
-
-            {/* Input Chip 3 */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#1A1B20",
-                border: "2px solid #28292E",
-                boxShadow: "3px 3px 0px #000000",
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: "#3B82F6",
-                  color: "#FFFFFF",
-                  padding: "2px 8px",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                }}
-              >
-                03
-              </div>
-              <div style={{ color: "#F8FAFC" }}>VOICE & AUDIO</div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              backgroundColor: "#3B82F6",
-              color: "#FFFFFF",
-              border: "3px solid #000000",
-              boxShadow: "5px 5px 0px #FFFFFF",
-              padding: "10px 24px",
-              fontFamily: '"JetBrains Mono", monospace',
-              fontWeight: 800,
-              fontSize: "15px",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <span>ENGINEERED BY AHMED HASSAN</span>
           </div>
         </div>
       </div>
