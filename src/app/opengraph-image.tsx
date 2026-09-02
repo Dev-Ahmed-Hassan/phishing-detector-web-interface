@@ -8,10 +8,18 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-  // Fetch Playfair Display 900 TTF from JSDelivr Fontsource CDN (100% CORS & Serverless friendly)
-  const fontData = await fetch(
-    "https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-900-normal.ttf"
-  ).then((res) => res.arrayBuffer());
+  // Fetch Playfair Display (for main title), Inter (for subtext), and JetBrains Mono (for badges) from JSDelivr
+  const [playfairFont, interFont, monoFont] = await Promise.all([
+    fetch("https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-900-normal.ttf").then((res) =>
+      res.arrayBuffer()
+    ),
+    fetch("https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.ttf").then((res) =>
+      res.arrayBuffer()
+    ),
+    fetch("https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-800-normal.ttf").then((res) =>
+      res.arrayBuffer()
+    ),
+  ]);
 
   return new ImageResponse(
     (
@@ -25,7 +33,7 @@ export default async function Image() {
           backgroundColor: "#121316",
           color: "#F8FAFC",
           padding: "54px 64px",
-          fontFamily: "sans-serif",
+          fontFamily: '"Inter", sans-serif',
           border: "4px solid #28292E",
           boxSizing: "border-box",
         }}
@@ -37,8 +45,8 @@ export default async function Image() {
               padding: "8px 20px",
               backgroundColor: "#3B82F6",
               color: "#FFFFFF",
-              fontFamily: "monospace",
-              fontWeight: 900,
+              fontFamily: '"JetBrains Mono", monospace',
+              fontWeight: 800,
               fontSize: "14px",
               letterSpacing: "2.5px",
               boxShadow: "3px 3px 0px #000000",
@@ -58,7 +66,7 @@ export default async function Image() {
               border: "2px solid #28292E",
               boxShadow: "4px 4px 0px #3B82F6",
               fontSize: "14px",
-              fontFamily: "monospace",
+              fontFamily: '"JetBrains Mono", monospace',
               fontWeight: 800,
               color: "#F8FAFC",
               letterSpacing: "1px",
@@ -82,7 +90,7 @@ export default async function Image() {
             style={{
               fontSize: "96px",
               fontWeight: 900,
-              fontFamily: '"Playfair Display"',
+              fontFamily: '"Playfair Display", serif',
               letterSpacing: "-2.5px",
               color: "#F8FAFC",
               margin: 0,
@@ -95,8 +103,8 @@ export default async function Image() {
           <div
             style={{
               fontSize: "26px",
-              fontWeight: 900,
-              fontFamily: "monospace",
+              fontWeight: 800,
+              fontFamily: '"JetBrains Mono", monospace',
               color: "#3B82F6",
               letterSpacing: "1.5px",
               textTransform: "uppercase",
@@ -113,7 +121,7 @@ export default async function Image() {
               lineHeight: 1.4,
               fontWeight: 500,
               maxWidth: "920px",
-              fontFamily: "sans-serif",
+              fontFamily: '"Inter", sans-serif',
             }}
           >
             Autonomous OSINT agent verifying WhatsApp job offers, fake virtual internships, offer letters, and certificate fee traps.
@@ -129,7 +137,7 @@ export default async function Image() {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            fontFamily: "monospace",
+            fontFamily: '"JetBrains Mono", monospace',
             fontSize: "13px",
             fontWeight: 800,
             textTransform: "uppercase",
@@ -155,7 +163,7 @@ export default async function Image() {
                   color: "#FFFFFF",
                   padding: "2px 8px",
                   fontSize: "12px",
-                  fontWeight: 900,
+                  fontWeight: 800,
                 }}
               >
                 01
@@ -181,7 +189,7 @@ export default async function Image() {
                   color: "#FFFFFF",
                   padding: "2px 8px",
                   fontSize: "12px",
-                  fontWeight: 900,
+                  fontWeight: 800,
                 }}
               >
                 02
@@ -207,7 +215,7 @@ export default async function Image() {
                   color: "#FFFFFF",
                   padding: "2px 8px",
                   fontSize: "12px",
-                  fontWeight: 900,
+                  fontWeight: 800,
                 }}
               >
                 03
@@ -223,8 +231,8 @@ export default async function Image() {
               border: "3px solid #000000",
               boxShadow: "5px 5px 0px #FFFFFF",
               padding: "10px 24px",
-              fontFamily: "monospace",
-              fontWeight: 900,
+              fontFamily: '"JetBrains Mono", monospace',
+              fontWeight: 800,
               fontSize: "15px",
               textTransform: "uppercase",
               letterSpacing: "1px",
@@ -241,8 +249,20 @@ export default async function Image() {
       ...size,
       fonts: [
         {
+          name: "Inter",
+          data: interFont,
+          style: "normal",
+          weight: 600,
+        },
+        {
+          name: "JetBrains Mono",
+          data: monoFont,
+          style: "normal",
+          weight: 800,
+        },
+        {
           name: "Playfair Display",
-          data: fontData,
+          data: playfairFont,
           style: "normal",
           weight: 900,
         },
