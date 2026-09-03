@@ -1775,8 +1775,8 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
             <a href="#extension" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
               {t.navExtension}
             </a>
-            <Link href="/report-scam" className="px-3 py-1 bg-red-600 text-white font-black hover:bg-red-700 transition-colors border border-white text-[11px]">
-              REPORT A SCAM
+            <Link href="/report-scam" className="px-3 py-1.5 border-2 border-transparent hover:border-red-600 text-red-500 hover:text-red-400 font-bold transition-colors">
+              Report Scam
             </Link>
             <a href="https://ahmed-hassan-portfoliosite.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
               {t.navPortfolio}

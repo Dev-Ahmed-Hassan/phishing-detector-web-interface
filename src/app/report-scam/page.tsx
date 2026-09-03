@@ -18,7 +18,6 @@ export default function ReportScamPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Strict 2MB Limit Check
     if (file.size > 2 * 1024 * 1024) {
       alert("File size exceeds 2MB limit. Please upload a smaller image.");
       return;
@@ -70,119 +69,135 @@ export default function ReportScamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white flex flex-col font-sans">
-      {/* Neo-Brutalist Top Navbar */}
-      <header className="border-b-2 border-zinc-800 bg-black px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="bg-white text-black font-black text-sm px-2 py-1 tracking-wider uppercase border border-black">
-            NAUKRI NIGRAN
-          </span>
-          <span className="text-zinc-400 font-mono text-xs hidden sm:inline">COMMUNITY SAFETY</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/" className="text-xs font-bold text-zinc-300 hover:text-white underline">
-            &larr; BACK TO SCANNER
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col items-center p-4 sm:p-6 md:p-8 font-sans relative overflow-x-hidden">
+      
+      {/* HEADER NAVBAR (Identical to Landing Page) */}
+      <header className="w-full max-w-5xl z-30 mb-8 brutal-card bg-[var(--card-bg)] border-4 border-[var(--border-color)] p-4 shadow-[4px_4px_0_var(--shadow-color)]">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-[var(--foreground)]">
+              Naukri Nigran
+            </span>
           </Link>
-          <Link href="/admin" className="text-xs font-mono text-zinc-500 hover:text-zinc-300">
-            [ADMIN QUEUE]
-          </Link>
+
+          <nav className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+            <Link href="/#scanner" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)]">
+              Scanner
+            </Link>
+            <Link href="/#demo" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
+              Demo Cases
+            </Link>
+            <Link href="/#whatsapp" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
+              WhatsApp Bot
+            </Link>
+            <Link href="/#extension" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
+              Extension
+            </Link>
+            <Link href="/report-scam" className="px-3 py-1.5 border-2 border-transparent hover:border-red-600 text-red-500 hover:text-red-400 font-bold transition-colors">
+              Report Scam
+            </Link>
+            <a href="https://ahmed-hassan-portfoliosite.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
+              Portfolio ↗
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="px-3 py-1.5 text-xs font-mono font-bold border-2 border-[var(--border-color)] bg-[var(--card-bg)] shadow-[3px_3px_0_var(--shadow-color)] text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+            >
+              &larr; BACK
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* Main Form Container */}
-      <main className="flex-1 max-w-2xl w-full mx-auto p-6 md:p-10 flex flex-col justify-center">
-        <div className="border-4 border-white bg-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+      {/* MAIN FORM CONTAINER */}
+      <main className="w-full max-w-xl z-20 my-auto">
+        <div className="brutal-card bg-[var(--card-bg)] border-4 border-[var(--border-color)] p-6 sm:p-8 shadow-[8px_8px_0_var(--shadow-color)]">
           
-          <div className="border-b-2 border-zinc-800 pb-4 mb-6">
-            <span className="bg-red-600 text-white font-black text-xs px-2 py-1 tracking-widest uppercase border border-white">
-              CYBERCRIME REPORT TIP LINE
-            </span>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white mt-3 uppercase">
-              REPORT A SCAM OFFER TO AUTHORITIES
+          <div className="border-b-2 border-[var(--border-color)] pb-4 mb-6">
+            <h1 className="text-2xl font-black uppercase text-[var(--foreground)] tracking-tight">
+              REPORT A SCAM
             </h1>
-            <p className="text-xs font-semibold text-zinc-400 mt-1">
-              Submit proof against fraudulent employers, certificate mills, or fee harvesters across Pakistan.
+            <p className="text-xs font-mono text-[var(--foreground)] opacity-70 mt-1">
+              Submit fraudulent company details or evidence for admin verification & community indexing.
             </p>
           </div>
 
           {success ? (
-            <div className="border-2 border-emerald-500 bg-emerald-950/40 p-6 text-emerald-200 flex flex-col gap-4">
-              <span className="font-mono text-xs uppercase tracking-widest font-black text-emerald-400">
-                STATUS: REPORT RECEIVED & QUEUED
+            <div className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 flex flex-col gap-4">
+              <span className="font-mono text-xs uppercase tracking-widest font-black text-emerald-500">
+                REPORT SUBMITTED & QUEUED
               </span>
-              <h2 className="text-xl font-bold text-white uppercase">
-                THANK YOU FOR PROTECTING JOB SEEKERS
-              </h2>
-              <p className="text-xs leading-relaxed text-zinc-300">
-                Your scam report and evidence statement have been submitted to the Naukri Nigran Admin Team. An admin will review your report and proof, and if verified, it will be added directly into our Community Threat Index to alert job seekers across Pakistan.
+              <p className="text-xs leading-relaxed opacity-90 font-mono">
+                Your report has been submitted to Naukri Nigran administrators. Once verified, it will be added to the Community Threat Index.
               </p>
-              <div className="pt-2">
-                <Link
-                  href="/"
-                  className="inline-block bg-white text-black font-black text-xs px-4 py-3 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.4)] hover:translate-x-[2px] hover:translate-y-[2px]"
-                >
-                  RETURN TO HOME SCANNER &rarr;
-                </Link>
-              </div>
+              <Link
+                href="/"
+                className="inline-block text-center bg-[var(--foreground)] text-[var(--background)] font-black text-xs px-4 py-3 border-2 border-[var(--border-color)] shadow-[4px_4px_0_var(--shadow-color)]"
+              >
+                RETURN TO SCANNER &rarr;
+              </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {errorMsg && (
-                <div className="border-2 border-red-500 bg-red-950/50 p-3 text-red-300 font-mono text-xs">
+                <div className="border-2 border-red-500 p-3 text-red-500 font-mono text-xs">
                   ERROR: {errorMsg}
                 </div>
               )}
 
-              {/* Company Name */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
-                  TARGET ORGANIZATION / COMPANY NAME *
+              {/* Target Organization */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider opacity-80">
+                  Target Organization *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. CodeAlpha, Global Tech Internships, Data Entry Co."
+                  placeholder="e.g. CodeAlpha, Global Tech"
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
-                  className="bg-zinc-950 border-2 border-zinc-700 text-white text-sm p-3 focus:border-white focus:outline-none font-mono"
+                  className="bg-[var(--background)] border-2 border-[var(--border-color)] text-[var(--foreground)] text-sm p-3 font-mono focus:outline-none"
                 />
               </div>
 
-              {/* Scam Channel / Payment Number */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
-                  SCAM CONTACT / PAYMENT CHANNEL (WHATSAPP, EASYPAISA, EMAIL)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. EasyPaisa 0300-1234567, hr@fakecompany.com"
-                  value={scamChannel}
-                  onChange={(e) => setScamChannel(e.target.value)}
-                  className="bg-zinc-950 border-2 border-zinc-700 text-white text-sm p-3 focus:border-white focus:outline-none font-mono"
-                />
-              </div>
-
-              {/* Detailed Proof Statement */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
-                  PROOF STATEMENT & SCAM DETAILS *
+              {/* Scam Details */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider opacity-80">
+                  Proof Statement / Details *
                 </label>
                 <textarea
                   required
-                  rows={4}
-                  placeholder="Describe what happened (e.g., 'Demanded Rs 500 registration fee for internship certificate after 1 day. Promised IIT certificate.')"
+                  rows={3}
+                  placeholder="Describe what happened (e.g. demanded Rs 500 certificate fee)"
                   value={proofText}
                   onChange={(e) => setProofText(e.target.value)}
-                  className="bg-zinc-950 border-2 border-zinc-700 text-white text-sm p-3 focus:border-white focus:outline-none font-mono leading-relaxed"
+                  className="bg-[var(--background)] border-2 border-[var(--border-color)] text-[var(--foreground)] text-sm p-3 font-mono focus:outline-none leading-relaxed"
                 />
               </div>
 
-              {/* Image Proof Upload (Max 2MB) */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
-                  ATTACH SCREENSHOT PROOF (MAX 2MB)
+              {/* Scam Contact */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider opacity-80">
+                  Scam Channel / Number (Optional)
                 </label>
-                <div className="border-2 border-dashed border-zinc-700 bg-zinc-950 p-4 flex flex-col items-center justify-center gap-2 text-center">
+                <input
+                  type="text"
+                  placeholder="e.g. EasyPaisa 0300-1234567, WhatsApp, Email"
+                  value={scamChannel}
+                  onChange={(e) => setScamChannel(e.target.value)}
+                  className="bg-[var(--background)] border-2 border-[var(--border-color)] text-[var(--foreground)] text-sm p-3 font-mono focus:outline-none"
+                />
+              </div>
+
+              {/* Attachment */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider opacity-80">
+                  Attach Screenshot (Optional, Max 2MB)
+                </label>
+                <div className="border-2 border-dashed border-[var(--border-color)] bg-[var(--background)] p-3 text-center">
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
@@ -192,48 +207,25 @@ export default function ReportScamPage() {
                   />
                   <label
                     htmlFor="proof-image-input"
-                    className="cursor-pointer bg-zinc-800 text-white font-mono text-xs px-3 py-2 border border-zinc-600 hover:bg-zinc-700"
+                    className="cursor-pointer bg-[var(--card-bg)] text-[var(--foreground)] font-mono text-xs px-3 py-1.5 border border-[var(--border-color)] inline-block"
                   >
-                    SELECT SCREENSHOT IMAGE
+                    SELECT SCREENSHOT
                   </label>
-                  {fileName ? (
-                    <span className="font-mono text-xs text-emerald-400">
+                  {fileName && (
+                    <span className="font-mono text-xs block text-emerald-500 mt-1">
                       SELECTED: {fileName}
-                    </span>
-                  ) : (
-                    <span className="font-mono text-[10px] text-zinc-500">
-                      JPEG, PNG, or WEBP up to 2MB
                     </span>
                   )}
                 </div>
-              </div>
-
-              {/* Reporter Contact (Optional) */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black tracking-wider uppercase text-zinc-400">
-                  YOUR CONTACT (OPTIONAL FOR ADMIN FOLLOWUP)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your Email or WhatsApp number (kept confidential)"
-                  value={reporterContact}
-                  onChange={(e) => setReporterContact(e.target.value)}
-                  className="bg-zinc-950 border-2 border-zinc-700 text-white text-sm p-3 focus:border-white focus:outline-none font-mono"
-                />
-              </div>
-
-              {/* Notice */}
-              <div className="bg-zinc-900 border border-zinc-800 p-3 text-[11px] font-mono text-zinc-400">
-                ADMIN PROTECTION: All submissions are manually verified by Naukri Nigran administrators before entity threat indexing.
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-black text-sm p-4 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.4)] hover:translate-x-[2px] hover:translate-y-[2px] cursor-pointer disabled:opacity-50 mt-2"
+                className="bg-[var(--foreground)] text-[var(--background)] font-black text-xs p-3.5 border-2 border-[var(--border-color)] shadow-[4px_4px_0_var(--shadow-color)] hover:translate-x-[2px] hover:translate-y-[2px] cursor-pointer disabled:opacity-50 mt-2"
               >
-                {loading ? "SUBMITTING REPORT..." : "SUBMIT SCAM PROOF TO ADMIN &rarr;"}
+                {loading ? "SUBMITTING..." : "SUBMIT SCAM REPORT &rarr;"}
               </button>
             </form>
           )}
@@ -241,8 +233,9 @@ export default function ReportScamPage() {
         </div>
       </main>
 
-      <footer className="border-t border-zinc-800 py-4 px-6 text-center text-xs font-mono text-zinc-500">
-        NAUKRI NIGRAN COMMUNITY CYBERCRIME TIP LINE &copy; 2026
+      {/* FOOTER */}
+      <footer className="w-full max-w-5xl z-20 mt-12 pt-6 border-t-2 border-[var(--border-color)] text-center text-xs font-mono opacity-70">
+        Naukri Nigran Community Tip Line &copy; 2026
       </footer>
     </div>
   );
