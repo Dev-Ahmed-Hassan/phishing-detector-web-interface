@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import ReportActions from "@/components/ReportActions";
-import GroundedDossier from "@/components/GroundedDossier";
+import DossierReport from "@/components/DossierReport";
 import { sanitizeReport } from "@/lib/share-report";
 import type { AnalyzeV2Response } from "@/lib/report-types";
 
@@ -96,7 +96,7 @@ export default function SharedReportPage() {
         </div>
 
         {/* FULL DOSSIER UI */}
-        <GroundedDossier report={reportData.report} t={{}} />
+        <DossierReport data={reportData} lang="en" />
       </div>
     </div>
   );
