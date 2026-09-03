@@ -707,7 +707,7 @@ function CustomVerifiedFacts({ facts, t }: { facts: VerifiedFact[]; t: any }) {
 // CONTACT TRACES SECTION (PHONE / EMAIL OSINT)
 // ============================================================================
 function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any }) {
-  if (!traces?.length) return null;
+  const hasTraces = traces && traces.length > 0;
 
   return (
     <section id="traces" className="space-y-6 scroll-mt-24">
@@ -719,11 +719,21 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
           {t.sec03Title}
         </h3>
         <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
-          {t.sec03Badge(traces.length)}
+          {t.sec03Badge(traces?.length || 0)}
         </span>
       </div>
 
-      <div className="space-y-6">
+      {!hasTraces ? (
+        <div className="border-2 border-dashed border-[var(--border-color)] bg-[var(--card-bg)] p-6 text-center space-y-2">
+          <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--foreground)] opacity-80">
+            0 CONTACT ENTITIES DETECTED
+          </p>
+          <p className="text-xs text-[var(--foreground)] opacity-60 max-w-md mx-auto">
+            No phone numbers or email addresses were extracted from this submission for OSINT contact tracing.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
         {traces.map((trace, i) => {
           if (trace.type === "phone") {
             const statusBadgeClass =
@@ -830,6 +840,7 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
           );
         })}
       </div>
+      )}
     </section>
   );
 }
