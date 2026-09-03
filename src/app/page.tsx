@@ -399,27 +399,32 @@ function StatusBadge({
 function ScoreLedgerTable({ justification, t }: { justification: string; t: any }) {
   if (!justification) return null;
 
-  // Smart splitting engine: works with period separation OR continuous colon-number patterns
-  let rawItems = justification
-    .split(/(?:\.|\n)+/)
-    .map((s) => s.trim().replace(/\.$/, ""))
-    .filter(Boolean);
+  // Robust Score Item Extractor: handles period separation, colon deltas, and multi-clause strings
+  let items: { label: string; delta: number | null; rawDelta: string }[] = [];
 
-  // If period splitting yields <= 1 item but contains multiple score deltas, extract via regex
-  if (rawItems.length <= 1) {
-    const regexMatches = justification.match(/([^:]+:\s*[+-]?\d+)/gi);
-    if (regexMatches && regexMatches.length > 0) {
-      rawItems = regexMatches.map((m) => m.trim());
-    }
+  // 1. Try matching all "Label: [+-]Score" pairs globally
+  const globalMatches = Array.from(justification.matchAll(/([^:.\n]+):\s*([+-]?\d+)/gi));
+  if (globalMatches.length > 0) {
+    items = globalMatches.map((m) => ({
+      label: m[1].trim(),
+      delta: parseInt(m[2], 10),
+      rawDelta: (parseInt(m[2], 10) > 0 ? "+" : "") + m[2].trim().replace(/^\+/, ""),
+    }));
+  } else {
+    // 2. Fallback period splitting
+    const rawItems = justification
+      .split(/(?:\.|\n)+/)
+      .map((s) => s.trim().replace(/\.$/, ""))
+      .filter(Boolean);
+
+    items = rawItems.map((sentence) => {
+      const match = sentence.match(/^(.*?):\s*([+-]?\d+)/i);
+      if (match) {
+        return { label: match[1].trim(), delta: parseInt(match[2], 10), rawDelta: match[2].trim() };
+      }
+      return { label: sentence, delta: null, rawDelta: "" };
+    });
   }
-
-  const items = rawItems.map((sentence) => {
-    const match = sentence.match(/^(.*?):\s*([+-]?\d+)/i);
-    if (match) {
-      return { label: match[1].trim(), delta: parseInt(match[2], 10), rawDelta: match[2].trim() };
-    }
-    return { label: sentence, delta: null, rawDelta: "" };
-  });
 
   return (
     <div className="bg-[var(--background)] p-4 font-mono text-xs space-y-2.5" dir="ltr">
