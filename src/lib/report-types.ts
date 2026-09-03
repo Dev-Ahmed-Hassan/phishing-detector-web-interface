@@ -1,4 +1,4 @@
-export type Lang = "en" | "ur";
+export type Lang = "en" | "ur" | "roman_ur";
 export type Weight = "high" | "medium" | "low";
 export type EvidenceStatus = "confirmed" | "contradicted" | "unverified";
 

@@ -1813,14 +1813,17 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
           <div className="flex items-center gap-2">
             <div className="flex items-center border-2 border-[var(--border-color)] bg-[var(--card-bg)] shadow-[3px_3px_0_var(--shadow-color)] rounded divide-x-2 divide-[var(--border-color)] overflow-hidden">
               <button
-                onClick={() => handleLanguageChange(language === "en" ? "ur" : "en")}
-                className="px-3 py-1.5 text-xs font-mono font-bold text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer flex items-center gap-1.5 group"
-                title="Switch Language"
+                onClick={() => {
+                  const next: Record<string, Lang> = { en: "ur", ur: "roman_ur", roman_ur: "en" };
+                  handleLanguageChange(next[language] || "en");
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-bold text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer flex items-center gap-1.5 group border-2 border-[var(--border-color)] shadow-[2px_2px_0_var(--shadow-color)]"
+                title="Switch Language (EN / Urdu / Roman Urdu)"
               >
                 <svg className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
-                <span>{language === "en" ? "EN" : "UR"}</span>
+                <span>{language === "en" ? "EN" : language === "ur" ? "اردو" : "ROMAN URDU"}</span>
               </button>
 
               <button
