@@ -1582,7 +1582,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const t = translations[language];
+  const t = translations[language === "ur" ? "ur" : "en"];
   const isUrdu = language === "ur";
 
   useEffect(() => {
