@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem, ContactTrace } from "@/lib/report-types";
 import { getDomain, isUrduScript } from "@/lib/report-utils";
 import { readSharedReport, sanitizeReport } from "@/lib/share-report";
@@ -1774,6 +1775,9 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
             <a href="#extension" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
               {t.navExtension}
             </a>
+            <Link href="/report-scam" className="px-3 py-1.5 border-2 border-transparent hover:border-red-600 text-red-500 hover:text-red-400 font-bold transition-colors">
+              Report Scam
+            </Link>
             <a href="https://ahmed-hassan-portfoliosite.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
               {t.navPortfolio}
             </a>
