@@ -130,6 +130,7 @@ export function sanitizeReport(raw: unknown): AnalyzeV2Response {
     extracted_entities: sanitizeExtractedEntities(input.extracted_entities),
     contact_traces: sanitizeContactTraces(input.contact_traces),
     timings: sanitizeTimings(input.timings),
+    dossier_id: withString((input as any)?.dossier_id),
   } as AnalyzeV2Response;
 }
 

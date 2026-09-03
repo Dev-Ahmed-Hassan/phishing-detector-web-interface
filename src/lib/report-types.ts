@@ -147,4 +147,5 @@ export interface AnalyzeV2Response {
   extracted_entities?: ExtractedEntities;
   contact_traces?: ContactTrace[];
   timings?: Timings;
+  dossier_id?: string;
 }
