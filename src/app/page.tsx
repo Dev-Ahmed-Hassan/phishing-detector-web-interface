@@ -740,6 +740,49 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
       ) : (
         <div className="space-y-6">
         {traces.map((trace, i) => {
+          if (trace.type === "database_match") {
+            return (
+              <article key={i} className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 shadow-[6px_6px_0_var(--shadow-color)] space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#EF4444] flex items-center gap-1.5">
+                      NAUKRI NIGRAN COMMUNITY THREAT DB MATCH
+                    </span>
+                    <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--foreground)]">{trace.value}</h4>
+                    <p className="text-xs font-mono text-[var(--foreground)] opacity-70">
+                      Entity Type: {((trace as any).entity_type || "organization").toUpperCase()}
+                    </p>
+                  </div>
+                  <StatusBadge rx="0.4rem" className="bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40 shrink-0">
+                    FLAGGED IN THREAT INDEX
+                  </StatusBadge>
+                </div>
+
+                {trace.findings && trace.findings.length > 0 && (
+                  <div className="space-y-3">
+                    {trace.findings.map((f, fi) => (
+                      <div key={fi} className="border-2 border-rose-500/30 bg-rose-500/5 p-4 space-y-2">
+                        <p className="text-sm sm:text-base text-[var(--foreground)] leading-relaxed font-serif">
+                          {f.snippet}
+                        </p>
+                        {f.source_url && (
+                          <a
+                            href={f.source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-rose-500 text-rose-500 font-bold hover:underline"
+                          >
+                            View Historical Shared Dossier &rsaquo;
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            );
+          }
+
           if (trace.type === "phone") {
             const statusBadgeClass =
               trace.search_status === "ok"
