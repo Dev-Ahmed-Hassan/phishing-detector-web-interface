@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem, ContactTrace } from "@/lib/report-types";
 import { getDomain, isUrduScript } from "@/lib/report-utils";
+import { readSharedReport, sanitizeReport } from "@/lib/share-report";
 import InvestigationProgress from "@/components/InvestigationProgress";
+import ReportActions from "@/components/ReportActions";
 
 // ============================================================================
 // FABRICATED DEMO PAYLOAD FOR NEUTRAL MOCK EVALUATION (SAFE & FABRICATED)
@@ -397,27 +399,32 @@ function StatusBadge({
 function ScoreLedgerTable({ justification, t }: { justification: string; t: any }) {
   if (!justification) return null;
 
-  // Smart splitting engine: works with period separation OR continuous colon-number patterns
-  let rawItems = justification
-    .split(/(?:\.|\n)+/)
-    .map((s) => s.trim().replace(/\.$/, ""))
-    .filter(Boolean);
+  // Robust Score Item Extractor: handles period separation, colon deltas, and multi-clause strings
+  let items: { label: string; delta: number | null; rawDelta: string }[] = [];
 
-  // If period splitting yields <= 1 item but contains multiple score deltas, extract via regex
-  if (rawItems.length <= 1) {
-    const regexMatches = justification.match(/([^:]+:\s*[+-]?\d+)/gi);
-    if (regexMatches && regexMatches.length > 0) {
-      rawItems = regexMatches.map((m) => m.trim());
-    }
+  // 1. Try matching all "Label: [+-]Score" pairs globally
+  const globalMatches = Array.from(justification.matchAll(/([^:.\n]+):\s*([+-]?\d+)/gi));
+  if (globalMatches.length > 0) {
+    items = globalMatches.map((m) => ({
+      label: m[1].trim(),
+      delta: parseInt(m[2], 10),
+      rawDelta: (parseInt(m[2], 10) > 0 ? "+" : "") + m[2].trim().replace(/^\+/, ""),
+    }));
+  } else {
+    // 2. Fallback period splitting
+    const rawItems = justification
+      .split(/(?:\.|\n)+/)
+      .map((s) => s.trim().replace(/\.$/, ""))
+      .filter(Boolean);
+
+    items = rawItems.map((sentence) => {
+      const match = sentence.match(/^(.*?):\s*([+-]?\d+)/i);
+      if (match) {
+        return { label: match[1].trim(), delta: parseInt(match[2], 10), rawDelta: match[2].trim() };
+      }
+      return { label: sentence, delta: null, rawDelta: "" };
+    });
   }
-
-  const items = rawItems.map((sentence) => {
-    const match = sentence.match(/^(.*?):\s*([+-]?\d+)/i);
-    if (match) {
-      return { label: match[1].trim(), delta: parseInt(match[2], 10), rawDelta: match[2].trim() };
-    }
-    return { label: sentence, delta: null, rawDelta: "" };
-  });
 
   return (
     <div className="bg-[var(--background)] p-4 font-mono text-xs space-y-2.5" dir="ltr">
@@ -705,7 +712,7 @@ function CustomVerifiedFacts({ facts, t }: { facts: VerifiedFact[]; t: any }) {
 // CONTACT TRACES SECTION (PHONE / EMAIL OSINT)
 // ============================================================================
 function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any }) {
-  if (!traces?.length) return null;
+  const hasTraces = traces && traces.length > 0;
 
   return (
     <section id="traces" className="space-y-6 scroll-mt-24">
@@ -717,12 +724,65 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
           {t.sec03Title}
         </h3>
         <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70">
-          {t.sec03Badge(traces.length)}
+          {t.sec03Badge(traces?.length || 0)}
         </span>
       </div>
 
-      <div className="space-y-6">
+      {!hasTraces ? (
+        <div className="border-2 border-dashed border-[var(--border-color)] bg-[var(--card-bg)] p-6 text-center space-y-2">
+          <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--foreground)] opacity-80">
+            0 CONTACT ENTITIES DETECTED
+          </p>
+          <p className="text-xs text-[var(--foreground)] opacity-60 max-w-md mx-auto">
+            No phone numbers or email addresses were extracted from this submission for OSINT contact tracing.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
         {traces.map((trace, i) => {
+          if (trace.type === "database_match") {
+            return (
+              <article key={i} className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 shadow-[6px_6px_0_var(--shadow-color)] space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#EF4444] flex items-center gap-1.5">
+                      NAUKRI NIGRAN COMMUNITY THREAT DB MATCH
+                    </span>
+                    <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--foreground)]">{trace.value}</h4>
+                    <p className="text-xs font-mono text-[var(--foreground)] opacity-70">
+                      Entity Type: {((trace as any).entity_type || "organization").toUpperCase()}
+                    </p>
+                  </div>
+                  <StatusBadge rx="0.4rem" className="bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40 shrink-0">
+                    FLAGGED IN THREAT INDEX
+                  </StatusBadge>
+                </div>
+
+                {trace.findings && trace.findings.length > 0 && (
+                  <div className="space-y-3">
+                    {trace.findings.map((f, fi) => (
+                      <div key={fi} className="border-2 border-rose-500/30 bg-rose-500/5 p-4 space-y-2">
+                        <p className="text-sm sm:text-base text-[var(--foreground)] leading-relaxed font-serif">
+                          {f.snippet}
+                        </p>
+                        {f.source_url && (
+                          <a
+                            href={f.source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-rose-500 text-rose-500 font-bold hover:underline"
+                          >
+                            View Historical Shared Dossier &rsaquo;
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            );
+          }
+
           if (trace.type === "phone") {
             const statusBadgeClass =
               trace.search_status === "ok"
@@ -828,6 +888,7 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
           );
         })}
       </div>
+      )}
     </section>
   );
 }
@@ -1465,11 +1526,11 @@ function setCookie(name: string, value: string, days = 365) {
 // ============================================================================
 // MAIN PAGE COMPONENT
 // ============================================================================
-export default function Home() {
+export default function Home({ initialReport }: { initialReport?: AnalyzeV2Response | null } = {}) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [report, setReport] = useState<AnalyzeV2Response | null>(MOCK_DATA);
+  const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || MOCK_DATA);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -1499,6 +1560,15 @@ export default function Home() {
     const savedLang = (getCookie("app_language") || localStorage.getItem("app_language")) as Lang;
     if (savedLang && (savedLang === "en" || savedLang === "ur")) {
       setLanguage(savedLang);
+    }
+  }, []);
+
+  // Restore a report shared via URL query parameter (e.g., ?r=...)
+  useEffect(() => {
+    const shared = readSharedReport();
+    if (shared?.report) {
+      setReport(sanitizeReport(shared));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
     }
   }, []);
 
@@ -1630,7 +1700,7 @@ export default function Home() {
 
         const data: AnalyzeV2Response = await response.json();
         if (data.status === "success" && data.report) {
-          setReport(data);
+          setReport(sanitizeReport(data));
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
         } else if (data.status === "success") {
           setNotice(data.message || t.noticeTitle);
@@ -1645,7 +1715,7 @@ export default function Home() {
       }
     } else {
       setTimeout(() => {
-        setReport(MOCK_DATA);
+        setReport(sanitizeReport(MOCK_DATA));
         setIsSubmitting(false);
       }, 1200);
     }
@@ -1963,6 +2033,8 @@ export default function Home() {
 
                 <div className="space-y-10">
                   <CustomVerdictHero data={report} lang={language} t={t} />
+
+                  <ReportActions data={report} t={t} />
 
                   {judgeReport.user_facing_report?.summary_paragraph && (
                     <section className="brutal-card p-6 bg-[var(--card-bg)] border-4 border-[var(--border-color)] fade-rise">
