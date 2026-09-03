@@ -125,7 +125,20 @@ export interface EmailTrace {
   risk_signal: "new_domain" | "suspicious" | "clean" | "unknown";
 }
 
-export type ContactTrace = PhoneTrace | EmailTrace;
+export interface DatabaseMatchTrace {
+  type: "database_match";
+  value: string;
+  entity_type?: string;
+  search_status: "ok" | "no_results" | "failed";
+  findings: {
+    source_url: string;
+    source_title?: string;
+    snippet?: string;
+  }[];
+  risk_signal: "flagged" | "clean" | "unknown";
+}
+
+export type ContactTrace = PhoneTrace | EmailTrace | DatabaseMatchTrace;
 
 export interface AnalyzeV2Response {
   status: string;
