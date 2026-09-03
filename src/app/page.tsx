@@ -1534,6 +1534,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
   const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || MOCK_DATA);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [translatedData, setTranslatedData] = useState<any>(null);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1702,7 +1703,33 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
         const data: AnalyzeV2Response = await response.json();
         if (data.status === "success" && data.report) {
           setReport(sanitizeReport(data));
+          setTranslatedData(null);
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+
+          // Silent Background Pre-translation into Urdu Script & Roman Urdu (Zero Latency)
+          const rep = data.report;
+          const summaryStr = rep.user_facing_report?.summary || rep.user_facing_report?.one_line_summary || "";
+          const keyFindings = rep.user_facing_report?.key_findings || [];
+          const redFlags = (rep.red_flags || []).map((rf: any) => rf.indicator || rf.title || "");
+          const recommendedActions = rep.recommended_actions || [];
+
+          fetch("/api/translate-report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              summary: summaryStr,
+              key_findings: keyFindings,
+              red_flags: redFlags,
+              recommended_actions: recommendedActions,
+            }),
+          })
+            .then((res) => res.json())
+            .then((tRes) => {
+              if (tRes.status === "success" && tRes.translations) {
+                setTranslatedData(tRes.translations);
+              }
+            })
+            .catch((e) => console.error("Silent background translation error:", e));
         } else if (data.status === "success") {
           setNotice(data.message || t.noticeTitle);
         } else {
