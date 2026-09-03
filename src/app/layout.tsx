@@ -14,32 +14,32 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Naukri Nigran • AI Anti-Scam Intelligence & Job Scam Detector",
+  title: "ScamLess • AI Anti-Scam Intelligence & Job Scam Detector",
   description: "Autonomous OSINT Phishing & Job Scam Investigator. Paste suspicious WhatsApp messages, offer letters, or voice notes to instantly detect fake internships and fee traps.",
   authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
   creator: "Ahmed Hassan",
-  publisher: "Naukri Nigran Intelligence",
+  publisher: "ScamLess Intelligence",
   metadataBase: new URL("https://naukrinigran.vercel.app"),
   keywords: [
+    "ScamLess",
     "Phishing Detector",
     "WhatsApp Scam Scanner",
     "Job Scam Verification",
     "Anti-Scam OSINT",
     "Roman Urdu Scam Detector",
     "Pakistan Job Safety",
-    "Naukri Nigran",
     "Ahmed Hassan"
   ],
   openGraph: {
-    title: "Naukri Nigran • Anti-Scam Intelligence Engine",
+    title: "ScamLess • Anti-Scam Intelligence Engine",
     description: "Autonomous Multi-Agent OSINT Phishing & Job Scam Investigator. Verify job offer letters, WhatsApp recruitment messages, and fee traps in real-time.",
-    siteName: "Naukri Nigran",
+    siteName: "ScamLess",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Naukri Nigran • AI Anti-Scam Intelligence Engine",
+        alt: "ScamLess • AI Anti-Scam Intelligence Engine",
       },
     ],
     locale: "en_US",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Naukri Nigran • AI Anti-Scam Intelligence Engine",
+    title: "ScamLess • AI Anti-Scam Intelligence Engine",
     description: "Detect fake job offers, fee traps, and WhatsApp recruitment scams with autonomous OSINT verification.",
     images: ["/opengraph-image"],
     creator: "@ahmedhassan",

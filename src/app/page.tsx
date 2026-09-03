@@ -746,7 +746,7 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#EF4444] flex items-center gap-1.5">
-                      NAUKRI NIGRAN COMMUNITY THREAT DB MATCH
+                      SCAMLESS COMMUNITY THREAT DB MATCH
                     </span>
                     <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--foreground)]">{trace.value}</h4>
                     <p className="text-xs font-mono text-[var(--foreground)] opacity-70">
@@ -1757,7 +1757,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-[var(--foreground)]">
-              Naukri Nigran
+              ScamLess
             </span>
           </div>
 
@@ -2174,7 +2174,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <span className="font-serif font-black text-xl sm:text-2xl tracking-tight uppercase">
-              Naukri Nigran
+              ScamLess
             </span>
             <span className="hidden sm:inline-block text-xs font-mono font-bold uppercase tracking-widest opacity-60 border-l-2 border-[var(--border-color)] pl-3">
               {t.antiScamTag}

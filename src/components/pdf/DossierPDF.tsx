@@ -349,10 +349,10 @@ export default function DossierPDF({ data }: DossierPDFProps) {
   };
 
   return (
-    <Document title={`Naukri Nigran Report — ${entity}`} author="Naukri Nigran Intelligence">
+    <Document title={`ScamLess Report — ${entity}`} author="ScamLess Intelligence">
       <Page size="A4" style={styles.page}>
         <View style={styles.headerBand} fixed>
-          <Text style={styles.headerBrand}>Naukri Nigran</Text>
+          <Text style={styles.headerBrand}>ScamLess</Text>
           <Text style={styles.headerTag}>Anti-Scam Intelligence Report</Text>
         </View>
 
@@ -417,14 +417,14 @@ export default function DossierPDF({ data }: DossierPDFProps) {
         </View>
 
         <View style={styles.footer} fixed>
-          <Text>Naukri Nigran • Confidential OSINT Dossier</Text>
+          <Text>ScamLess • Confidential OSINT Dossier</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>
 
       <Page size="A4" style={styles.page}>
         <View style={styles.headerBand} fixed>
-          <Text style={styles.headerBrand}>Naukri Nigran</Text>
+          <Text style={styles.headerBrand}>ScamLess</Text>
           <Text style={styles.headerTag}>Anti-Scam Intelligence Report</Text>
         </View>
 
@@ -450,14 +450,14 @@ export default function DossierPDF({ data }: DossierPDFProps) {
         </View>
 
         <View style={styles.footer} fixed>
-          <Text>Naukri Nigran • Confidential OSINT Dossier</Text>
+          <Text>ScamLess • Confidential OSINT Dossier</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>
 
       <Page size="A4" style={styles.page}>
         <View style={styles.headerBand} fixed>
-          <Text style={styles.headerBrand}>Naukri Nigran</Text>
+          <Text style={styles.headerBrand}>ScamLess</Text>
           <Text style={styles.headerTag}>Anti-Scam Intelligence Report</Text>
         </View>
 
@@ -551,7 +551,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
         )}
 
         <View style={styles.footer} fixed>
-          <Text>Naukri Nigran • Confidential OSINT Dossier</Text>
+          <Text>ScamLess • Confidential OSINT Dossier</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>
@@ -559,7 +559,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
       {((report.threat_vectors ?? []).length > 0 || Object.keys(report.links_of_interest ?? {}).length > 0 || (report.uncertainties ?? []).length > 0) && (
         <Page size="A4" style={styles.page}>
           <View style={styles.headerBand} fixed>
-            <Text style={styles.headerBrand}>Naukri Nigran</Text>
+            <Text style={styles.headerBrand}>ScamLess</Text>
             <Text style={styles.headerTag}>Anti-Scam Intelligence Report</Text>
           </View>
 
@@ -623,7 +623,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
           )}
 
           <View style={styles.footer} fixed>
-            <Text>Naukri Nigran • Confidential OSINT Dossier</Text>
+            <Text>ScamLess • Confidential OSINT Dossier</Text>
             <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
           </View>
         </Page>
@@ -631,7 +631,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
 
       <Page size="A4" style={styles.page}>
         <View style={styles.headerBand} fixed>
-          <Text style={styles.headerBrand}>Naukri Nigran</Text>
+          <Text style={styles.headerBrand}>ScamLess</Text>
           <Text style={styles.headerTag}>Anti-Scam Intelligence Report</Text>
         </View>
 
@@ -655,7 +655,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
         <View style={styles.section}>
           <Text style={styles.label}>Methodology</Text>
           <Text style={styles.cardBody}>
-            This report was generated autonomously by the Naukri Nigran OSINT pipeline. Phase 1 extracts entities
+            This report was generated autonomously by the ScamLess OSINT pipeline. Phase 1 extracts entities
             from the user-submitted message; Phase 2 queries public web, domain, phone, and community sources;
             Phase 3 applies a rule-augmented AI judgment engine to produce a confidence score and verdict.
             Results are advisory and should be cross-checked with official authorities before taking legal action.
@@ -663,7 +663,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
         </View>
 
         <View style={styles.footer} fixed>
-          <Text>Naukri Nigran • Confidential OSINT Dossier</Text>
+          <Text>ScamLess • Confidential OSINT Dossier</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>

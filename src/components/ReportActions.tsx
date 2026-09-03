@@ -30,7 +30,7 @@ export default function ReportActions({ data, t }: ReportActionsProps) {
     try {
       const entity = data.report.metadata.target_entity || "investigation";
       const date = new Date().toISOString().slice(0, 10);
-      const filename = `naukri-nigran-report-${slugifyEntity(entity)}-${date}.pdf`;
+      const filename = `scamless-report-${slugifyEntity(entity)}-${date}.pdf`;
       const blob = await pdf(<DossierPDF data={data} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");

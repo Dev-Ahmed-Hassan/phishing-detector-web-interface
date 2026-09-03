@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Naukri Nigran • Agentic OSINT Scam Detector";
+export const alt = "ScamLess • Agentic OSINT Scam Detector";
 export const size = {
   width: 1200,
   height: 630,
@@ -107,7 +107,7 @@ export default async function Image() {
               lineHeight: 0.95,
             }}
           >
-            Naukri Nigran
+            ScamLess
           </div>
 
           {/* Primary Tagline (Tactical Amber Gold) */}
