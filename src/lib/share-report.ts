@@ -150,12 +150,27 @@ function sanitizeContactTraces(raw: unknown): ContactTrace[] | undefined {
   const traces = withArray<any>(raw);
   if (!traces.length) return undefined;
   return traces.map((trace: any) => {
-    const type = trace?.type === "phone" ? "phone" : "email";
+    const rawType = trace?.type;
     const value = withString(trace?.value, "N/A");
 
-    if (type === "phone") {
+    if (rawType === "database_match") {
       return {
-        type,
+        type: "database_match",
+        value,
+        entity_type: withString(trace?.entity_type, "organization"),
+        search_status: withString(trace?.search_status, "ok"),
+        risk_signal: withString(trace?.risk_signal, "flagged"),
+        findings: withArray(trace?.findings).map((f: any) => ({
+          source_url: withString(f?.source_url, "#"),
+          source_title: withString(f?.source_title),
+          snippet: withString(f?.snippet, "Community Threat Database Flag"),
+        })),
+      } as ContactTrace;
+    }
+
+    if (rawType === "phone") {
+      return {
+        type: "phone",
         value,
         normalized: withString(trace?.normalized, value),
         search_status: withString(trace?.search_status, "unknown"),
@@ -169,7 +184,7 @@ function sanitizeContactTraces(raw: unknown): ContactTrace[] | undefined {
     }
 
     return {
-      type,
+      type: "email",
       value,
       domain: withString(trace?.domain, value),
       whois_creation_date: withString(trace?.whois_creation_date),
