@@ -499,7 +499,7 @@ export default function DossierPDF({ data }: DossierPDFProps) {
             {(data.contact_traces ?? []).map((trace, i) => (
               <NeoCard key={i}>
                 <Text style={styles.cardTitle}>
-                  {trace.type === "phone" ? "Phone Trace" : "Email Trace"}: {trace.value || "N/A"}
+                  {trace.type === "phone" ? "Phone Trace" : trace.type === "database_match" ? "Community Threat DB Match" : "Email Trace"}: {trace.value || "N/A"}
                 </Text>
                 {trace.type === "phone" ? (
                   <>
@@ -510,6 +510,21 @@ export default function DossierPDF({ data }: DossierPDFProps) {
                     {(trace.findings ?? []).length > 0 && (
                       <>
                         <Text style={styles.label}>Findings</Text>
+                        {(trace.findings ?? []).map((f, j) => (
+                          <Text key={j} style={styles.cardMuted}>• {f.snippet || "No snippet available."}</Text>
+                        ))}
+                      </>
+                    )}
+                  </>
+                ) : trace.type === "database_match" ? (
+                  <>
+                    <Text style={styles.label}>Entity Type</Text>
+                    <Text style={styles.cardBody}>{(trace.entity_type || "organization").toUpperCase()}</Text>
+                    <Text style={styles.label}>Risk Signal</Text>
+                    <Text style={[styles.cardBody, { fontWeight: 900, textTransform: "uppercase" }]}>{trace.risk_signal || "N/A"}</Text>
+                    {(trace.findings ?? []).length > 0 && (
+                      <>
+                        <Text style={styles.label}>Evidence & Findings</Text>
                         {(trace.findings ?? []).map((f, j) => (
                           <Text key={j} style={styles.cardMuted}>• {f.snippet || "No snippet available."}</Text>
                         ))}
