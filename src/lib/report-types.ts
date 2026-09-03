@@ -131,7 +131,6 @@ export interface AnalyzeV2Response {
   status: string;
   report: JudgeReport | null;
   message?: string;
-  dossier_id?: string;
   extracted_entities?: ExtractedEntities;
   contact_traces?: ContactTrace[];
   timings?: Timings;

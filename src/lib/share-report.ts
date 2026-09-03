@@ -125,7 +125,6 @@ export function sanitizeReport(raw: unknown): AnalyzeV2Response {
 
   return {
     status: withString(input.status, "success"),
-    dossier_id: withString(input.dossier_id),
     report: safeReport,
     message: withString(input.message),
     extracted_entities: sanitizeExtractedEntities(input.extracted_entities),
@@ -223,10 +222,6 @@ export function decodeReport(encoded: string): AnalyzeV2Response | null {
  */
 export function buildShareUrl(data: AnalyzeV2Response): string {
   if (typeof window === "undefined") return "";
-  if (data.dossier_id) {
-    const origin = window.location.origin;
-    return `${origin}/report/${data.dossier_id}`;
-  }
   const encoded = encodeReport(data);
   const url = new URL(window.location.href);
   url.search = "";
