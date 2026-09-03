@@ -81,7 +81,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white flex flex-col font-sans">
-      <!-- Navbar -->
+      {/* Navbar */}
       <header className="border-b-2 border-zinc-800 bg-black px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <span className="bg-white text-black font-black text-sm px-2 py-1 tracking-wider uppercase border border-black">

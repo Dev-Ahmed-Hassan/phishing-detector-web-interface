@@ -71,7 +71,7 @@ export default function ReportScamPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white flex flex-col font-sans">
-      <!-- Neo-Brutalist Top Navbar -->
+      {/* Neo-Brutalist Top Navbar */}
       <header className="border-b-2 border-zinc-800 bg-black px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <span className="bg-white text-black font-black text-sm px-2 py-1 tracking-wider uppercase border border-black">
@@ -89,7 +89,7 @@ export default function ReportScamPage() {
         </div>
       </header>
 
-      <!-- Main Form Container -->
+      {/* Main Form Container */}
       <main className="flex-1 max-w-2xl w-full mx-auto p-6 md:p-10 flex flex-col justify-center">
         <div className="border-4 border-white bg-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
           
@@ -133,7 +133,7 @@ export default function ReportScamPage() {
                 </div>
               )}
 
-              <!-- Company Name -->
+              {/* Company Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
                   TARGET ORGANIZATION / COMPANY NAME *
@@ -148,7 +148,7 @@ export default function ReportScamPage() {
                 />
               </div>
 
-              <!-- Scam Channel / Payment Number -->
+              {/* Scam Channel / Payment Number */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
                   SCAM CONTACT / PAYMENT CHANNEL (WHATSAPP, EASYPAISA, EMAIL)
@@ -162,7 +162,7 @@ export default function ReportScamPage() {
                 />
               </div>
 
-              <!-- Detailed Proof Statement -->
+              {/* Detailed Proof Statement */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
                   PROOF STATEMENT & SCAM DETAILS *
@@ -177,7 +177,7 @@ export default function ReportScamPage() {
                 />
               </div>
 
-              <!-- Image Proof Upload (Max 2MB) -->
+              {/* Image Proof Upload (Max 2MB) */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black tracking-wider uppercase text-zinc-300">
                   ATTACH SCREENSHOT PROOF (MAX 2MB)
@@ -208,7 +208,7 @@ export default function ReportScamPage() {
                 </div>
               </div>
 
-              <!-- Reporter Contact (Optional) -->
+              {/* Reporter Contact (Optional) */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-black tracking-wider uppercase text-zinc-400">
                   YOUR CONTACT (OPTIONAL FOR ADMIN FOLLOWUP)
@@ -222,12 +222,12 @@ export default function ReportScamPage() {
                 />
               </div>
 
-              <!-- Notice -->
+              {/* Notice */}
               <div className="bg-zinc-900 border border-zinc-800 p-3 text-[11px] font-mono text-zinc-400">
                 ADMIN PROTECTION: All submissions are manually verified by Naukri Nigran administrators before entity threat indexing.
               </div>
 
-              <!-- Submit Button -->
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
