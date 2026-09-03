@@ -125,6 +125,7 @@ export function sanitizeReport(raw: unknown): AnalyzeV2Response {
 
   return {
     status: withString(input.status, "success"),
+    dossier_id: withString(input.dossier_id),
     report: safeReport,
     message: withString(input.message),
     extracted_entities: sanitizeExtractedEntities(input.extracted_entities),

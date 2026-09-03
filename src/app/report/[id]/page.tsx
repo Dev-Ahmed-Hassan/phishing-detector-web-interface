@@ -10,7 +10,8 @@ import type { AnalyzeV2Response } from "@/lib/report-types";
 
 export default function SharedReportPage() {
   const params = useParams();
-  const id = params?.id as string;
+  const rawId = params?.id;
+  const id = Array.isArray(rawId) ? rawId[0] : (rawId as string) || "";
 
   const [loading, setLoading] = useState(true);
   const [reportData, setReportData] = useState<AnalyzeV2Response | null>(null);
