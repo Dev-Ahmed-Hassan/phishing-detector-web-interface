@@ -1524,9 +1524,45 @@ function setCookie(name: string, value: string, days = 365) {
   } catch (e) {}
 }
 
-// ============================================================================
-// MAIN PAGE COMPONENT
-// ============================================================================
+const MOCK_TRANSLATIONS = {
+  ur: {
+    summary: "یہ پیشکش نوکری کے خواہش مند افراد کو فریب دینے والا اسکیم ہے۔ کمپنی نے ۲۵ ڈالر کی سرٹیفکیٹ فیس کا مطالبہ کیا ہے اور ڈومین بالکل نیا ہے۔",
+    key_findings: [
+      "ڈومین ۳۰ دن سے کم پرانا ہے (Registered Nov 2024)",
+      "امیدواروں سے پیشگی ۲۵ ڈالر پروسیسنگ فیس کا مطالبہ کیا گیا",
+      "فون نمبر کمیونٹی اسکیم رپورٹس میں درج ہے"
+    ],
+    red_flags: [
+      "پیشگی سرٹیفیکیشن فیس کا مطالبہ",
+      "غیر تصدیق شدہ ڈومین نام",
+      "خودکار غیر جانچ شدہ آفر لیٹر"
+    ],
+    recommended_actions: [
+      "اس ایزی پیسہ / بینک اکاؤنٹ میں رقم منتقل نہ کریں",
+      "واٹس ایپ پر اس نمبر کو بلاک کریں",
+      "ایف آئی اے سائبر کرائم پورٹل پر رپورٹ درج کریں"
+    ]
+  },
+  roman_ur: {
+    summary: "Yeh offer aik confirmed fee trap scam hai. Company ne $25 ki certification fee ka mutalba kia hai aur domain bilkul naya hai.",
+    key_findings: [
+      "Domain 30 din se kam purana hai (Registered Nov 2024)",
+      "Candidates se advance $25 processing fee mangi gayi",
+      "Phone number community scam reports me flagged hai"
+    ],
+    red_flags: [
+      "Advance certification fee ka mutalba",
+      "Unverified domain name",
+      "Automated unvetted offer letter"
+    ],
+    recommended_actions: [
+      "Is EasyPaisa / Bank account me paise transfer na karen",
+      "WhatsApp par is recruiter ko block karen",
+      "FIA Cybercrime portal par report darj karwayen"
+    ]
+  }
+};
+
 export default function Home({ initialReport }: { initialReport?: AnalyzeV2Response | null } = {}) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -1534,7 +1570,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
   const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || MOCK_DATA);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [translatedData, setTranslatedData] = useState<any>(null);
+  const [translatedData, setTranslatedData] = useState<any>(MOCK_TRANSLATIONS);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
