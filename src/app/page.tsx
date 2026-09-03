@@ -1707,11 +1707,11 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
 
           // Silent Background Pre-translation into Urdu Script & Roman Urdu (Zero Latency)
-          const rep = data.report;
-          const summaryStr = rep.user_facing_report?.summary || rep.user_facing_report?.one_line_summary || "";
-          const keyFindings = rep.user_facing_report?.key_findings || [];
-          const redFlags = (rep.red_flags || []).map((rf: any) => rf.indicator || rf.title || "");
-          const recommendedActions = rep.recommended_actions || [];
+          const rep = data.report as any;
+          const summaryStr = rep.user_facing_report?.summary_paragraph || rep.executive_summary?.one_sentence_takeaway?.en || "";
+          const keyFindings = (rep.verified_facts || []).map((f: any) => f.claim);
+          const redFlags = (rep.red_flags || []).map((rf: any) => rf.flag || rf.indicator || rf.technical_basis || "");
+          const recommendedActions = rep.user_facing_report?.what_you_should_do || [];
 
           fetch("/api/translate-report", {
             method: "POST",
