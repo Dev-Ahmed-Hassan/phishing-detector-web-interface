@@ -1467,11 +1467,11 @@ function setCookie(name: string, value: string, days = 365) {
 // ============================================================================
 // MAIN PAGE COMPONENT
 // ============================================================================
-export default function Home() {
+export default function Home({ initialReport }: { initialReport?: AnalyzeV2Response | null } = {}) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [report, setReport] = useState<AnalyzeV2Response | null>(MOCK_DATA);
+  const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || MOCK_DATA);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

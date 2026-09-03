@@ -219,9 +219,16 @@ export function decodeReport(encoded: string): AnalyzeV2Response | null {
 
 /**
  * Build a shareable URL for the current report.
+ * Uses clean Supabase permalinks (/report/rep_8x9f2a) if dossier_id exists.
  */
 export function buildShareUrl(data: AnalyzeV2Response): string {
   if (typeof window === "undefined") return "";
+
+  const dossierId = (data as any)?.dossier_id;
+  if (dossierId) {
+    return `${window.location.origin}/report/${dossierId}`;
+  }
+
   const encoded = encodeReport(data);
   const url = new URL(window.location.href);
   url.search = "";
@@ -231,7 +238,7 @@ export function buildShareUrl(data: AnalyzeV2Response): string {
 }
 
 /**
- * Extract a shared report from the current URL, if present.
+ * Extract a shared report from the current URL query parameter, if present.
  */
 export function readSharedReport(): AnalyzeV2Response | null {
   if (typeof window === "undefined") return null;
