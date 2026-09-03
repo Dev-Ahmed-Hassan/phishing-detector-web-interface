@@ -520,11 +520,17 @@ function ArcGauge({ score }: { score: number }) {
 // ============================================================================
 // BULLETPROOF HIGH-CONTRAST VERDICT HERO
 // ============================================================================
-function CustomVerdictHero({ data, lang, t }: { data: AnalyzeV2Response; lang: Lang; t: any }) {
+function CustomVerdictHero({ data, lang, translatedData, t }: { data: AnalyzeV2Response; lang: Lang; translatedData?: any; t: any }) {
   const report = data.report;
   if (!report) return null;
   const score = Math.round(report.executive_summary.confidence_score);
   const isUrdu = lang === "ur";
+
+  const takeawayText =
+    translatedData?.[lang]?.summary ||
+    (isUrdu && report.executive_summary.one_sentence_takeaway?.ur
+      ? report.executive_summary.one_sentence_takeaway.ur
+      : report.executive_summary.one_sentence_takeaway?.en);
 
   return (
     <section id="hero" className="brutal-card p-6 sm:p-8 fade-rise bg-[var(--card-bg)] text-[var(--foreground)] border-4 border-[var(--border-color)] scroll-mt-24">
@@ -569,13 +575,13 @@ function CustomVerdictHero({ data, lang, t }: { data: AnalyzeV2Response; lang: L
         </div>
       </div>
 
-      {report.executive_summary.one_sentence_takeaway && (
+      {takeawayText && (
         <div className="mt-8 brutal-card p-6 bg-[var(--background)] text-[var(--foreground)] border-2 border-[var(--border-color)] space-y-2 shadow-[4px_4px_0_var(--shadow-color)]">
           <p className="text-[11px] font-mono font-bold tracking-[0.25em] text-[var(--foreground)] opacity-60 uppercase flex items-center gap-2">
             <span>✦</span> {t.executiveTakeaway}
           </p>
           <p className="text-lg sm:text-xl leading-relaxed font-serif italic text-[var(--foreground)] font-medium">
-            &ldquo;{isUrdu && report.executive_summary.one_sentence_takeaway.ur ? report.executive_summary.one_sentence_takeaway.ur : report.executive_summary.one_sentence_takeaway.en}&rdquo;
+            &ldquo;{takeawayText}&rdquo;
           </p>
         </div>
       )}
@@ -586,8 +592,10 @@ function CustomVerdictHero({ data, lang, t }: { data: AnalyzeV2Response; lang: L
 // ============================================================================
 // BULLETPROOF HIGH-CONTRAST RED FLAGS
 // ============================================================================
-function CustomRedFlags({ flags, t }: { flags: RedFlag[]; t: any }) {
+function CustomRedFlags({ flags, lang, translatedData, t }: { flags: RedFlag[]; lang: Lang; translatedData?: any; t: any }) {
   if (!flags?.length) return null;
+  const translatedFlagsList = translatedData?.[lang]?.red_flags;
+
   return (
     <section id="flags" className="space-y-6 scroll-mt-24">
       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
@@ -604,6 +612,7 @@ function CustomRedFlags({ flags, t }: { flags: RedFlag[]; t: any }) {
 
       <div className="space-y-6">
         {flags.map((f, i) => {
+          const flagText = (translatedFlagsList && translatedFlagsList[i]) ? translatedFlagsList[i] : f.flag;
           const isHigh = f.weight.toLowerCase() === 'high' || f.weight.toLowerCase() === 'critical';
           const isMed = f.weight.toLowerCase() === 'medium';
           const badgeClass = isHigh
@@ -620,7 +629,7 @@ function CustomRedFlags({ flags, t }: { flags: RedFlag[]; t: any }) {
               <div className="flex items-start justify-between gap-4">
                 <h4 className="font-serif font-bold tracking-tight text-xl sm:text-2xl leading-snug flex items-center gap-3 text-[var(--foreground)]">
                   <span className="font-mono text-xs opacity-50 font-normal">{String(i + 1).padStart(2, "0")}</span>
-                  {f.flag}
+                  {flagText}
                 </h4>
                 <StatusBadge rx="0.4rem" className={`shrink-0 ${badgeClass}`}>
                   {f.weight.toUpperCase()}
@@ -659,8 +668,10 @@ function CustomRedFlags({ flags, t }: { flags: RedFlag[]; t: any }) {
 // ============================================================================
 // BULLETPROOF HIGH-CONTRAST VERIFIED FACTS
 // ============================================================================
-function CustomVerifiedFacts({ facts, t }: { facts: VerifiedFact[]; t: any }) {
+function CustomVerifiedFacts({ facts, lang, translatedData, t }: { facts: VerifiedFact[]; lang: Lang; translatedData?: any; t: any }) {
   if (!facts?.length) return null;
+  const translatedFindings = translatedData?.[lang]?.key_findings;
+
   return (
     <section id="facts" className="space-y-6 scroll-mt-24">
       <div className="flex items-center justify-between border-b-4 border-[var(--border-color)] pb-3 mb-6">
@@ -676,34 +687,37 @@ function CustomVerifiedFacts({ facts, t }: { facts: VerifiedFact[]; t: any }) {
       </div>
 
       <div className="space-y-4">
-        {facts.map((f, i) => (
-          <article
-            key={i}
-            className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 shadow-[4px_4px_0_var(--shadow-color)] space-y-4"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <h4 className="font-serif font-bold text-base sm:text-lg leading-snug text-[var(--foreground)]">{f.claim}</h4>
-              <StatusBadge rx="0.4rem" className="shrink-0 bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40">
-                {f.evidence_status.toUpperCase()}
-              </StatusBadge>
-            </div>
-
-            <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-4 font-serif italic text-sm leading-relaxed">
-              <mark className="editorial-mark">
-                <span>&quot;{f.snippet_quote}&quot;</span>
-              </mark>
-            </blockquote>
-
-            <a
-              href={f.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+        {facts.map((f, i) => {
+          const claimText = (translatedFindings && translatedFindings[i]) ? translatedFindings[i] : f.claim;
+          return (
+            <article
+              key={i}
+              className="border-2 border-[var(--border-color)] bg-[var(--card-bg)] p-6 shadow-[4px_4px_0_var(--shadow-color)] space-y-4"
             >
-              {t.sourceEvidenceLabel} {getDomain(f.source_url)} &rsaquo;
-            </a>
-          </article>
-        ))}
+              <div className="flex items-start justify-between gap-4">
+                <h4 className="font-serif font-bold text-base sm:text-lg leading-snug text-[var(--foreground)]">{claimText}</h4>
+                <StatusBadge rx="0.4rem" className="shrink-0 bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40">
+                  {f.evidence_status.toUpperCase()}
+                </StatusBadge>
+              </div>
+
+              <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-4 font-serif italic text-sm leading-relaxed">
+                <mark className="editorial-mark">
+                  <span>&quot;{f.snippet_quote}&quot;</span>
+                </mark>
+              </blockquote>
+
+              <a
+                href={f.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+              >
+                {t.sourceEvidenceLabel} {getDomain(f.source_url)} &rsaquo;
+              </a>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -897,12 +911,16 @@ function ContactTracesSection({ traces, t }: { traces: ContactTrace[]; t: any })
 // ============================================================================
 // INTERACTIVE LINKED ACTION CHECKLIST COMPONENT
 // ============================================================================
-function InteractiveActionChecklist({ items, t }: { items: string[]; t: any }) {
+function InteractiveActionChecklist({ items, lang, translatedData, t }: { items: string[]; lang: Lang; translatedData?: any; t: any }) {
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
 
-  if (!items?.length) return null;
+  const activeItems = (translatedData?.[lang]?.recommended_actions && translatedData[lang].recommended_actions.length > 0)
+    ? translatedData[lang].recommended_actions
+    : items;
 
-  const total = items.length;
+  if (!activeItems?.length) return null;
+
+  const total = activeItems.length;
   const completedCount = Object.values(checkedItems).filter(Boolean).length;
   const progressPercent = Math.round((completedCount / total) * 100);
 
@@ -942,7 +960,7 @@ function InteractiveActionChecklist({ items, t }: { items: string[]; t: any }) {
         </div>
 
         <div className="space-y-3 pt-2">
-          {items.map((act, i) => {
+          {activeItems.map((act: string, i: number) => {
             const isChecked = Boolean(checkedItems[i]);
             return (
               <div
@@ -2102,14 +2120,14 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
                 <RightTimelineTracker activeSection={activeSection} t={t} />
 
                 <div className="space-y-10">
-                  <CustomVerdictHero data={report} lang={language} t={t} />
+                  <CustomVerdictHero data={report} lang={language} translatedData={translatedData} t={t} />
 
                   <ReportActions data={report} t={t} />
 
                   {judgeReport.user_facing_report?.summary_paragraph && (
                     <section className="brutal-card p-6 bg-[var(--card-bg)] border-4 border-[var(--border-color)] fade-rise">
                       <p className="text-lg sm:text-xl font-serif leading-relaxed text-[var(--foreground)]">
-                        {judgeReport.user_facing_report.summary_paragraph}
+                        {translatedData?.[language]?.summary || judgeReport.user_facing_report.summary_paragraph}
                       </p>
                       {judgeReport.user_facing_report.what_we_checked && judgeReport.user_facing_report.what_we_checked.length > 0 && (
                         <ul className="mt-4 space-y-2 border-t-2 border-dashed border-[var(--border-color)] pt-4">
@@ -2124,9 +2142,9 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
                     </section>
                   )}
 
-                  <CustomRedFlags flags={judgeReport.red_flags ?? []} t={t} />
+                  <CustomRedFlags flags={judgeReport.red_flags ?? []} lang={language} translatedData={translatedData} t={t} />
 
-                  <CustomVerifiedFacts facts={judgeReport.verified_facts ?? []} t={t} />
+                  <CustomVerifiedFacts facts={judgeReport.verified_facts ?? []} lang={language} translatedData={translatedData} t={t} />
 
                   <ContactTracesSection traces={report.contact_traces ?? []} t={t} />
 
@@ -2220,7 +2238,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
                   )}
 
                   {judgeReport.user_facing_report?.what_you_should_do && judgeReport.user_facing_report.what_you_should_do.length > 0 && (
-                    <InteractiveActionChecklist items={judgeReport.user_facing_report.what_you_should_do} t={t} />
+                    <InteractiveActionChecklist items={judgeReport.user_facing_report.what_you_should_do} lang={language} translatedData={translatedData} t={t} />
                   )}
 
                   <TransparencyLogSection discarded={judgeReport.discarded_evidence ?? (report as any).discarded_evidence ?? []} t={t} />
