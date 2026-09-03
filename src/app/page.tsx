@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem, ContactTrace } from "@/lib/report-types";
 import { getDomain, isUrduScript } from "@/lib/report-utils";
+import { readSharedReport, sanitizeReport } from "@/lib/share-report";
 import InvestigationProgress from "@/components/InvestigationProgress";
+import ReportActions from "@/components/ReportActions";
 
 // ============================================================================
 // FABRICATED DEMO PAYLOAD FOR NEUTRAL MOCK EVALUATION (SAFE & FABRICATED)
@@ -1502,6 +1504,15 @@ export default function Home() {
     }
   }, []);
 
+  // Restore a report shared via URL query parameter (e.g., ?r=...)
+  useEffect(() => {
+    const shared = readSharedReport();
+    if (shared?.report) {
+      setReport(sanitizeReport(shared));
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+    }
+  }, []);
+
   const handlePaletteChange = (p: string) => {
     setPalette(p);
     document.documentElement.setAttribute("data-palette", p);
@@ -1630,7 +1641,7 @@ export default function Home() {
 
         const data: AnalyzeV2Response = await response.json();
         if (data.status === "success" && data.report) {
-          setReport(data);
+          setReport(sanitizeReport(data));
           setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
         } else if (data.status === "success") {
           setNotice(data.message || t.noticeTitle);
@@ -1645,7 +1656,7 @@ export default function Home() {
       }
     } else {
       setTimeout(() => {
-        setReport(MOCK_DATA);
+        setReport(sanitizeReport(MOCK_DATA));
         setIsSubmitting(false);
       }, 1200);
     }
@@ -1963,6 +1974,8 @@ export default function Home() {
 
                 <div className="space-y-10">
                   <CustomVerdictHero data={report} lang={language} t={t} />
+
+                  <ReportActions data={report} t={t} />
 
                   {judgeReport.user_facing_report?.summary_paragraph && (
                     <section className="brutal-card p-6 bg-[var(--card-bg)] border-4 border-[var(--border-color)] fade-rise">
