@@ -24,7 +24,7 @@ const FABRICATED_DOSSIER = {
   },
   executive_summary: {
     verdict: "suspicious",
-    confidence_score: 24,
+    confidence_score: 16,
     primary_threat_vector: "Virtual Certificate Fee Trap & Mass Unvetted Offer Letters",
     one_sentence_takeaway: {
       en: "Vanguard Apex Solutions operates a mass virtual internship portal issuing automated offer letters without screening, but candidate reports highlight compulsory fee demands to release internship completion certificates.",
@@ -138,7 +138,7 @@ const FABRICATED_DOSSIER = {
       note: "Refers to a sporting goods manufacturing brand."
     }
   ],
-  confidence_justification: "Base score: 50. Domain registered recently: -10. Automated unvetted offer letters: -11. Mandatory certificate fee demand: -15. Final score: 24."
+  confidence_justification: "Base score: 50. Partial official presence (official site found, no LinkedIn): +12. Very new domain found (< 6 months): -12. High-weight red flag (certificate fee demand): -12. High-weight red flag (unvetted offer letter): -12. Top threat vector severity (high): -10. Final score: 16."
 };
 
 const MOCK_DATA: AnalyzeV2Response = {
