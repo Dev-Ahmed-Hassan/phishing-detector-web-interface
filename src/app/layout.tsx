@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
   creator: "Ahmed Hassan",
   publisher: "ScamLess Intelligence",
-  metadataBase: new URL("https://naukrinigran.vercel.app"),
+  metadataBase: new URL("https://scamless.vercel.app"),
   keywords: [
     "ScamLess",
     "Phishing Detector",
