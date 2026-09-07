@@ -1833,7 +1833,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
   };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 relative bg-[var(--background)] w-full ${isUrdu ? "font-[Noto_Nastaliq_Urdu,serif]" : ""}`}>
+    <div className={`min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 relative bg-[var(--background)] w-full max-w-full overflow-x-hidden ${isUrdu ? "font-[Noto_Nastaliq_Urdu,serif]" : ""}`}>
       <AmbientBackgroundGrid />
 
       <ThemeSettingsModal
