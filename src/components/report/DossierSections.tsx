@@ -92,7 +92,7 @@ export function LinksExplorer({
   links,
   lang,
 }: {
-  links: Record<string, LinkOfInterest[]>;
+  links?: Record<string, LinkOfInterest[]>;
   lang: Lang;
 }) {
   const t = getReportT(lang);

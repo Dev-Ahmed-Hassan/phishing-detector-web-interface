@@ -86,7 +86,7 @@ export default function DossierReport({
           )}
 
           <VerifiedFacts facts={report.verified_facts} lang={lang} />
-          <LinksExplorer links={report.links_of_interest} lang={lang} />
+          <LinksExplorer links={report.links_of_interest || {}} lang={lang} />
           <UncertaintiesSection uncertainties={report.uncertainties} lang={lang} />
           <ActionChecklist actions={ufr?.what_you_should_do ?? []} lang={lang} />
           <TransparencySection discarded={report.discarded_evidence} lang={lang} />
