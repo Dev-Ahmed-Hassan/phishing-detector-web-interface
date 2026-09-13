@@ -110,7 +110,7 @@ export default function DemoCasesPage() {
                 }}
                 className="py-2.5 px-5 brutal-btn bg-[var(--foreground)] text-[var(--background)] font-mono font-bold text-xs tracking-wider border-2 border-[var(--border-color)] shadow-[3px_3px_0_var(--shadow-color)] uppercase flex items-center gap-2 cursor-pointer"
               >
-                <span>RUN LIVE SCAN SIMULATION →</span>
+                <span>RUN LIVE SCAN →</span>
               </button>
             </div>
           </div>
@@ -325,7 +325,7 @@ function CaseShowcaseCard({
         onClick={() => onRunScan(item)}
         className="w-full py-3 px-4 brutal-btn bg-[var(--foreground)] text-[var(--background)] font-mono font-bold text-xs tracking-wider border-2 border-[var(--border-color)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer uppercase flex items-center justify-center gap-2"
       >
-        <span>RUN LIVE SCAN SIMULATION →</span>
+        <span>RUN LIVE SCAN →</span>
       </button>
     </article>
   );
