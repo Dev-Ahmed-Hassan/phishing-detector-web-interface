@@ -1,7 +1,32 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
-import Script from "next/script";
+import fs from "fs";
+import path from "path";
 import "./globals.css";
+
+// Automatically copy real-world ad images to public/images folder for static serving
+try {
+  const srcDir = path.join(process.cwd(), "images");
+  const destDir = path.join(process.cwd(), "public", "images");
+  if (fs.existsSync(srcDir)) {
+    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+    const map: Record<string, string> = {
+      "Code Alpha.png": "code-alpha.png",
+      "PCT Fielding Coach.png": "pct-fielding-coach.png",
+      "Ubexis.jpeg": "ubexis.jpeg",
+      "Screenshot 2026-09-12 160554.png": "ext-screenshot-1.png",
+      "Screenshot 2026-09-12 160611.png": "ext-screenshot-2.png",
+      "Screenshot 2026-09-12 160645.png": "ext-screenshot-3.png",
+    };
+    for (const [src, dest] of Object.entries(map)) {
+      const s = path.join(srcDir, src);
+      const d = path.join(destDir, dest);
+      if (fs.existsSync(s) && (!fs.existsSync(d) || fs.statSync(s).mtimeMs > fs.statSync(d).mtimeMs)) {
+        fs.copyFileSync(s, d);
+      }
+    }
+  }
+} catch (e) {}
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -16,7 +41,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ScamLess • AI Anti-Scam Intelligence & Job Scam Detector",
   description: "Autonomous OSINT Phishing & Job Scam Investigator. Paste suspicious WhatsApp messages, offer letters, or voice notes to instantly detect fake internships and fee traps.",
-  authors: [{ name: "Ahmed Hassan", url: "https://ahmed-hassan-portfoliosite.vercel.app/" }],
+  authors: [{ name: "Ahmed Hassan", url: "https://github.com/Dev-Ahmed-Hassan" }],
   creator: "Ahmed Hassan",
   publisher: "ScamLess Intelligence",
   metadataBase: new URL("https://scamless.vercel.app"),
@@ -66,9 +91,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <head>
-        <Script
+        <script
           id="theme-init"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

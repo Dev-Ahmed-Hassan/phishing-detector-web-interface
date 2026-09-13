@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import Link from "next/link";
 import type { AnalyzeV2Response, Lang, RedFlag, VerifiedFact, ThreatVector, LinkOfInterest, Uncertainty, DiscardedItem, ContactTrace } from "@/lib/report-types";
 import { getDomain, isUrduScript } from "@/lib/report-utils";
 import { readSharedReport, sanitizeReport } from "@/lib/share-report";
 import InvestigationProgress from "@/components/InvestigationProgress";
 import ReportActions from "@/components/ReportActions";
+import Navbar from "@/components/Navbar";
+import ThemeSettingsModal from "@/components/ThemeSettingsModal";
+import AmbientBackgroundGrid from "@/components/AmbientBackgroundGrid";
 
 // ============================================================================
 // FABRICATED DEMO PAYLOAD FOR NEUTRAL MOCK EVALUATION (SAFE & FABRICATED)
@@ -196,6 +200,9 @@ const translations = {
     evidenceLabel: "Evidence (Screenshot / Audio)",
     btnAnalyze: "ANALYZING...",
     btnScan: "SCAN FOR SCAMS",
+    viewDemoBtn: "Explore Fictional Demo Report",
+    hideDemoBtn: "✕ Hide Demo Report",
+    demoNoticeBanner: "DEMO REPORT • FICTIONAL SAMPLE DATA FOR TESTING",
     noticeTitle: "NOTHING TO INVESTIGATE",
     errorTitle: "INVESTIGATION FAILED",
     retryBtn: "RETRY SCAN",
@@ -287,6 +294,9 @@ const translations = {
     evidenceLabel: "ثبوت (اسکرین شاٹ / آڈیو)",
     btnAnalyze: "...تجزیہ جاری ہے",
     btnScan: "اسکیم اسکین کریں",
+    viewDemoBtn: "فرضی نمونہ رپورٹ دیکھیں",
+    hideDemoBtn: "✕ نمونہ رپورٹ چھپائیں",
+    demoNoticeBanner: "نمونہ رپورٹ • یہ صرف ٹیسٹنگ کے لیے فرضی ڈیٹا ہے",
     noticeTitle: "تحقیق کے لیے کچھ نہیں ملا",
     errorTitle: "تحقیق ناکام رہی",
     retryBtn: "دوبارہ کوشش کریں",
@@ -1242,289 +1252,6 @@ function RightTimelineTracker({ activeSection, t }: { activeSection: string; t: 
 }
 
 // ============================================================================
-// AMBIENT MAGNETIC BACKGROUND GRID
-// ============================================================================
-function AmbientBackgroundGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    interface DotNode {
-      gx: number;
-      gy: number;
-      radius: number;
-      phase: number;
-      speed: number;
-      orbitRadius: number;
-      alpha: number;
-    }
-
-    let dots: DotNode[] = [];
-    const spacing = 38;
-
-    const buildGrid = () => {
-      width = canvas.width = document.documentElement.clientWidth || window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      dots = [];
-
-      let idx = 0;
-      for (let x = spacing / 2; x < width; x += spacing) {
-        for (let y = spacing / 2; y < height; y += spacing) {
-          const seed = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
-          const pseudoRand = seed - Math.floor(seed);
-          
-          let radius = 1.2;
-          let alpha = 0.7;
-          if (pseudoRand > 0.82) {
-            radius = 2.6;
-            alpha = 1.0;
-          } else if (pseudoRand > 0.5) {
-            radius = 1.7;
-            alpha = 0.85;
-          } else if (pseudoRand < 0.2) {
-            radius = 0.9;
-            alpha = 0.5;
-          }
-
-          dots.push({
-            gx: x,
-            gy: y,
-            radius,
-            phase: pseudoRand * Math.PI * 2,
-            speed: 0.0006 + (pseudoRand * 0.0008),
-            orbitRadius: 2.0 + pseudoRand * 3.0,
-            alpha,
-          });
-          idx++;
-        }
-      }
-    };
-
-    buildGrid();
-    window.addEventListener("resize", buildGrid);
-
-    const mouse = { x: -1000, y: -1000 };
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
-    let shockwave = { x: -1000, y: -1000, radius: 0, active: false };
-    const handleClick = (e: MouseEvent) => {
-      shockwave = { x: e.clientX, y: e.clientY, radius: 0, active: true };
-    };
-    window.addEventListener("click", handleClick, { passive: true });
-
-    const pullRadius = 120;
-    const maxPull = 16;
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      const isDark = document.documentElement.classList.contains("dark");
-      const baseRgb = isDark ? "250, 250, 250" : "9, 9, 11";
-      const time = Date.now();
-
-      if (shockwave.active) {
-        shockwave.radius += 14;
-        if (shockwave.radius > 400) {
-          shockwave.active = false;
-        }
-      }
-
-      for (let i = 0; i < dots.length; i++) {
-        const dot = dots[i];
-
-        const ambientX = dot.gx + Math.cos(time * dot.speed + dot.phase) * dot.orbitRadius;
-        const ambientY = dot.gy + Math.sin(time * dot.speed * 1.2 + dot.phase) * dot.orbitRadius;
-
-        let drawX = ambientX;
-        let drawY = ambientY;
-
-        const dx = mouse.x - ambientX;
-        const dy = mouse.y - ambientY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < pullRadius) {
-          const force = (1 - dist / pullRadius) * maxPull;
-          const angle = Math.atan2(dy, dx);
-          drawX += Math.cos(angle) * force;
-          drawY += Math.sin(angle) * force;
-        }
-
-        if (shockwave.active) {
-          const sdx = shockwave.x - ambientX;
-          const sdy = shockwave.y - ambientY;
-          const sdist = Math.sqrt(sdx * sdx + sdy * sdy);
-          const diff = Math.abs(sdist - shockwave.radius);
-          if (diff < 45) {
-            const waveForce = (1 - diff / 45) * 18;
-            const sangle = Math.atan2(sdy, sdx);
-            drawX -= Math.cos(sangle) * waveForce;
-            drawY -= Math.sin(sangle) * waveForce;
-          }
-        }
-
-        ctx.fillStyle = `rgba(${baseRgb}, ${dot.alpha * 0.18})`;
-        ctx.beginPath();
-        ctx.arc(drawX, drawY, dot.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener("resize", buildGrid);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("click", handleClick);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-    />
-  );
-}
-
-// ============================================================================
-// DISPLAY & ACCENT THEME PREFERENCES MODAL
-// ============================================================================
-function ThemeSettingsModal({
-  isOpen,
-  onClose,
-  currentPalette,
-  onSelectPalette,
-  isDark,
-  onToggleTheme,
-  t,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  currentPalette: string;
-  onSelectPalette: (p: string) => void;
-  isDark: boolean;
-  onToggleTheme: () => void;
-  t: any;
-}) {
-  if (!isOpen) return null;
-
-  const palettes = [
-    { id: "nordic", name: "Nordic Silk & Slate", desc: "Minimalist silk paper with royal slate blue accents", dot: "#2563EB" },
-    { id: "sand", name: "Archival Linen & Crimson", desc: "Warm book paper & sepia ink with crimson stamp accents", dot: "#991B1B" },
-    { id: "washi", name: "Japanese Washi & Sumi", desc: "Off-white washi paper with Sumi charcoal & bronze accents", dot: "#D97706" },
-    { id: "gunmetal", name: "Tactical Platinum & Cyan", desc: "Platinum slate paper with phosphor cyan accents", dot: "#0EA5E9" },
-    { id: "amber", name: "Tactical Amber", desc: "Warm alabaster & deep obsidian with gold amber accents", dot: "#F59E0B" },
-    { id: "mono", name: "Mono Brutalist", desc: "Pure high-contrast stark monochrome", dot: "#09090B" },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-      <div className="w-full max-w-lg bg-[var(--card-bg)] text-[var(--foreground)] border-2 border-[var(--border-color)] p-6 space-y-6 rounded-lg shadow-2xl relative">
-        <div className="flex items-center justify-between border-b border-[var(--border-color)]/30 pb-4">
-          <div>
-            <h3 className="font-serif font-bold text-xl text-[var(--foreground)] tracking-tight">{t.settingsTitle}</h3>
-            <p className="text-xs text-[var(--foreground)] opacity-60 font-sans mt-0.5">Customize appearance mode and color palette</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-md flex items-center justify-center font-sans font-semibold text-sm border border-[var(--border-color)]/40 hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer"
-            aria-label="Close settings"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="space-y-2.5">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-60 font-sans">
-            {t.appearanceMode}
-          </h4>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => { if (isDark) onToggleTheme(); }}
-              className={`p-3 rounded-md border-2 font-sans text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                !isDark
-                  ? "bg-[var(--accent-color)] text-[var(--accent-text)] border-[var(--accent-color)] shadow-sm"
-                  : "bg-[var(--background)] text-[var(--foreground)] border-[var(--border-color)]/30 opacity-70 hover:opacity-100"
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
-              </svg>
-              <span>{t.lightMode}</span>
-            </button>
-            <button
-              onClick={() => { if (!isDark) onToggleTheme(); }}
-              className={`p-3 rounded-md border-2 font-sans text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                isDark
-                  ? "bg-[var(--accent-color)] text-[var(--accent-text)] border-[var(--accent-color)] shadow-sm"
-                  : "bg-[var(--background)] text-[var(--foreground)] border-[var(--border-color)]/30 opacity-70 hover:opacity-100"
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-              <span>{t.darkMode}</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-2.5">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-60 font-sans">
-            {t.colorPalette}
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[260px] overflow-y-auto pr-1">
-            {palettes.map((p) => {
-              const isActive = currentPalette === p.id;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => onSelectPalette(p.id)}
-                  className={`p-3.5 rounded-md border-2 text-left transition-all cursor-pointer space-y-1 ${
-                    isActive
-                      ? "border-[var(--accent-color)] bg-[var(--accent-color)]/10 text-[var(--foreground)] shadow-xs"
-                      : "border-[var(--border-color)]/30 bg-[var(--background)] text-[var(--foreground)] opacity-80 hover:opacity-100 hover:border-[var(--border-color)]"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full border border-black/20 shrink-0" style={{ backgroundColor: p.dot }} />
-                    <span className="font-serif font-bold text-sm leading-none">{p.name}</span>
-                  </div>
-                  <p className="text-[11px] opacity-75 font-sans leading-tight pl-5">{p.desc}</p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-[var(--border-color)]/30 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2.5 rounded-md font-sans text-xs font-bold uppercase tracking-wider bg-[var(--accent-color)] text-[var(--accent-text)] cursor-pointer hover:opacity-90 transition-opacity shadow-xs"
-          >
-            {t.doneBtn}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
 // COOKIE & LOCAL STORAGE PERSISTENCE HELPERS
 // ============================================================================
 function getCookie(name: string): string | null {
@@ -1585,11 +1312,11 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || MOCK_DATA);
+  const [report, setReport] = useState<AnalyzeV2Response | null>(initialReport || null);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [translatedData, setTranslatedData] = useState<any>(
-    (initialReport as any)?.translations || (initialReport as any)?.report_json?.translations || MOCK_TRANSLATIONS
+    (initialReport as any)?.translations || (initialReport as any)?.report_json?.translations || null
   );
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -1634,9 +1361,58 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
     const shared = readSharedReport();
     if (shared?.report) {
       setReport(sanitizeReport(shared));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
     }
   }, []);
+
+  // Listen for demo simulation payloads triggered from /demo-cases
+  useEffect(() => {
+    try {
+      const rawDemo = sessionStorage.getItem("scamless_demo_payload");
+      if (rawDemo) {
+        sessionStorage.removeItem("scamless_demo_payload");
+        const parsed = JSON.parse(rawDemo);
+        setReport(null);
+
+        if (parsed?.input_text) {
+          setText(parsed.input_text);
+        }
+
+        const imgUrl = parsed?.ad_image;
+        const fileName = parsed?.file_name || (imgUrl ? imgUrl.split("/").pop() : "evidence_payload.png");
+
+        if (imgUrl || fileName) {
+          // 1. Immediately populate files state synchronously so file pill appears in UI instantly
+          const fallbackBlob = new Blob(["DEMO_PAYLOAD_IMAGE"], { type: "image/png" });
+          const initialFile = new File([fallbackBlob], fileName, { type: "image/png" });
+          setFiles([initialFile]);
+
+          // 2. Asynchronously fetch full image blob from server to upgrade binary payload
+          if (imgUrl) {
+            fetch(imgUrl)
+              .then((res) => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.blob();
+              })
+              .then((blob) => {
+                const realFile = new File([blob], fileName, { type: blob.type || "image/png" });
+                setFiles([realFile]);
+              })
+              .catch((e) => console.warn("Background blob fetch notice:", e));
+          }
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (e) {}
+  }, []);
+
+  // Auto-scroll to report if loaded via initialReport prop (permalinks)
+  useEffect(() => {
+    if (initialReport) {
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+    }
+  }, [initialReport]);
 
   const handlePaletteChange = (p: string) => {
     setPalette(p);
@@ -1725,7 +1501,9 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
     }
 
     document.startViewTransition(() => {
-      applyTheme();
+      flushSync(() => {
+        applyTheme();
+      });
     });
   };
 
@@ -1829,6 +1607,7 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
     setError(null);
     setText("");
     setFiles([]);
+    setTranslatedData(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -1850,160 +1629,33 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--background)_100%)] opacity-0 pointer-events-none z-0"></div>
 
       {/* TOP NAVIGATION BAR */}
-      <header className="w-full max-w-5xl z-30 mb-8 brutal-card bg-[var(--card-bg)] border-4 border-[var(--border-color)] p-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-[var(--foreground)]">
-              ScamLess
-            </span>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-            <a href="#scanner" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)]">
-              {t.navScanner}
-            </a>
-            <a href="#demo" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
-              {t.navDemo}
-            </a>
-            <a href="#whatsapp" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
-              {t.navWhatsapp}
-            </a>
-            <a href="#extension" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
-              {t.navExtension}
-            </a>
-            <Link href="/report-scam" className="px-3 py-1.5 border-2 border-transparent hover:border-red-600 text-red-500 hover:text-red-400 font-bold transition-colors">
-              Report Scam
-            </Link>
-            <a href="https://ahmed-hassan-portfoliosite.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 border-2 border-transparent hover:border-[var(--border-color)] transition-colors text-[var(--foreground)] opacity-70 hover:opacity-100">
-              {t.navPortfolio}
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border-2 border-[var(--border-color)] bg-[var(--card-bg)] shadow-[3px_3px_0_var(--shadow-color)] rounded divide-x-2 divide-[var(--border-color)] overflow-hidden">
-              <button
-                onClick={() => {
-                  const next: Record<string, Lang> = { en: "ur", ur: "roman_ur", roman_ur: "en" };
-                  handleLanguageChange(next[language] || "en");
-                }}
-                className="px-3 py-1.5 text-xs font-mono font-bold text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer flex items-center gap-1.5 group border-2 border-[var(--border-color)] shadow-[2px_2px_0_var(--shadow-color)]"
-                title="Switch Language (EN / Urdu / Roman Urdu)"
-              >
-                <svg className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
-                <span>{language === "en" ? "EN" : language === "ur" ? "اردو" : "ROMAN URDU"}</span>
-              </button>
-
-              <button
-                onClick={() => setIsSettingsOpen(true)}
-                className="px-3 py-1.5 text-xs font-mono font-bold text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer flex items-center gap-1.5 group"
-                title="Open Theme & Display Preferences"
-              >
-                <svg className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                </svg>
-                <span>THEMES</span>
-              </button>
-
-              <button
-                onClick={toggleTheme}
-                aria-label="Toggle Theme"
-                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                className="px-3 py-1.5 text-xs text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors cursor-pointer flex items-center justify-center group"
-              >
-                {isDark ? (
-                  <svg className="w-3.5 h-3.5 text-amber-400 group-hover:text-amber-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1" x2="12" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1" y1="12" x2="3" y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                  </svg>
-                ) : (
-                  <svg className="w-3.5 h-3.5 text-[var(--foreground)] group-hover:text-[var(--background)] transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                  </svg>
-                )}
-              </button>
-            </div>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle navigation menu"
-              className="md:hidden px-2.5 py-1.5 text-xs font-bold border-2 border-[var(--border-color)] uppercase bg-[var(--foreground)] text-[var(--background)] cursor-pointer"
-            >
-              {isMobileMenuOpen ? "✕" : "☰"}
-            </button>
-          </div>
-        </div>
-
-        {isMobileMenuOpen && (
-          <nav className="md:hidden mt-4 pt-4 border-t-2 border-[var(--border-color)] flex flex-col gap-2 font-mono text-xs font-bold uppercase tracking-wider">
-            <a
-              href="#scanner"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--card-bg)]"
-            >
-              {t.navScanner}
-            </a>
-            <a
-              href="#demo"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--card-bg)]"
-            >
-              {t.navDemo}
-            </a>
-            <a
-              href="#whatsapp"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--card-bg)]"
-            >
-              {t.navWhatsapp}
-            </a>
-            <a
-              href="#extension"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--card-bg)]"
-            >
-              {t.navExtension}
-            </a>
-            <a
-              href="https://ahmed-hassan-portfoliosite.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--card-bg)]"
-            >
-              {t.navPortfolio}
-            </a>
-          </nav>
-        )}
-      </header>
+      <Navbar
+        language={language}
+        onLanguageChange={handleLanguageChange}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onToggleTheme={toggleTheme}
+        isDark={isDark}
+        t={t}
+      />
 
       {/* Main Content */}
-      <main id="scanner" className="w-full max-w-4xl z-10 relative space-y-8 my-auto">
-        <header className={`mb-10 border-b-4 border-[var(--border-color)] pb-8 ${isUrdu ? "text-right" : "text-left"}`}>
-          <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-tight text-[var(--foreground)] leading-tight uppercase">
+      <main id="scanner" className="w-full max-w-3xl sm:max-w-4xl z-10 relative space-y-6 sm:space-y-8 my-auto">
+        <header className={`mb-6 sm:mb-8 border-b-2 sm:border-b-4 border-[var(--border-color)] pb-6 ${isUrdu ? "text-right" : "text-left"}`}>
+          <h1 className="text-2xl sm:text-4xl lg:text-[2.65rem] font-serif font-bold tracking-normal text-[var(--foreground)] leading-snug uppercase">
             {t.title}
           </h1>
-          <p className="text-[var(--foreground)] opacity-85 mt-3 text-base sm:text-lg font-medium leading-relaxed max-w-2xl">
+          <p className="text-[var(--foreground)] opacity-80 mt-2.5 text-sm sm:text-base font-normal leading-relaxed max-w-xl">
             {t.subtitle}
           </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-8" dir={isUrdu ? "rtl" : "ltr"}>
-          <div className="space-y-3">
-            <label className="text-base sm:text-lg font-bold text-[var(--foreground)] uppercase tracking-wider block">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7" dir={isUrdu ? "rtl" : "ltr"}>
+          <div className="space-y-2">
+            <label className="text-xs sm:text-sm font-mono font-bold text-[var(--foreground)] opacity-80 uppercase tracking-widest block">
               {t.msgLabel}
             </label>
             <textarea
-              className="w-full p-5 brutal-input text-base sm:text-lg leading-relaxed resize-none text-[var(--foreground)] placeholder:text-[#888888] bg-[var(--input-bg)] border-2 border-[var(--border-color)]"
+              className="w-full p-4 sm:p-5 brutal-input text-sm sm:text-base leading-relaxed resize-none text-[var(--foreground)] placeholder:text-[#888888] bg-[var(--input-bg)] border-2 border-[var(--border-color)]"
               rows={4}
               placeholder={t.msgPlaceholder}
               value={text}
@@ -2012,24 +1664,24 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
             />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-base sm:text-lg font-bold text-[var(--foreground)] uppercase tracking-wider block">
+              <label className="text-xs sm:text-sm font-mono font-bold text-[var(--foreground)] opacity-80 uppercase tracking-widest block">
                 {t.evidenceLabel}
               </label>
-              <span className="text-xs font-mono font-bold text-[var(--foreground)] opacity-70">
+              <span className="text-[11px] font-mono font-bold text-[var(--foreground)] opacity-60">
                 ({files.length} / 3 {isUrdu ? "فائلیں" : "FILES"})
               </span>
             </div>
 
             {/* Input file box (visible when files < 3) */}
             {files.length < 3 && (
-              <div className="brutal-input p-3 flex items-center bg-[var(--input-bg)] border-2 border-[var(--border-color)]">
+              <div className="brutal-input p-2.5 sm:p-3 flex items-center bg-[var(--input-bg)] border-2 border-[var(--border-color)]">
                 <input
                   type="file"
                   multiple
                   accept="image/*,application/pdf,audio/*"
-                  className={`w-full text-base text-[var(--foreground)] file:py-2.5 file:px-5 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-base file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? "file:ml-4" : "file:mr-4"}`}
+                  className={`w-full text-xs sm:text-sm text-[var(--foreground)] file:py-2 file:px-4 file:rounded-sm file:border-2 file:border-[var(--border-color)] file:text-xs file:font-bold file:bg-[var(--card-bg)] file:text-[var(--foreground)] hover:file:bg-[var(--background)] transition-colors cursor-pointer ${isUrdu ? "file:ml-3" : "file:mr-3"}`}
                   onChange={handleFileChange}
                   disabled={isSubmitting}
                 />
@@ -2045,10 +1697,10 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
                   const isPdf = f.type.includes("pdf");
                   const isAudio = f.type.startsWith("audio/");
 
-                  let fileIcon = "📁";
-                  if (isImage) fileIcon = "🖼️";
-                  else if (isPdf) fileIcon = "📄";
-                  else if (isAudio) fileIcon = "🎵";
+                  let fileTag = "[FILE]";
+                  if (isImage) fileTag = "[IMG]";
+                  else if (isPdf) fileTag = "[PDF]";
+                  else if (isAudio) fileTag = "[AUDIO]";
 
                   return (
                     <div
@@ -2056,7 +1708,9 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
                       className="flex items-center justify-between p-3 border-2 border-[var(--border-color)] bg-[var(--card-bg)] shadow-[2px_2px_0_var(--shadow-color)] transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0 pr-2">
-                        <span className="text-xl shrink-0">{fileIcon}</span>
+                        <span className="px-1.5 py-0.5 border border-[var(--border-color)] text-[10px] font-mono font-bold bg-[var(--background)] text-[var(--foreground)] shrink-0">
+                          {fileTag}
+                        </span>
                         <div className="min-w-0">
                           <p className="text-xs sm:text-sm font-mono font-bold text-[var(--foreground)] truncate">
                             {f.name}
@@ -2094,7 +1748,28 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
           </button>
         </form>
 
-        <div ref={resultsRef} className="scroll-mt-8">
+        {!report && !isSubmitting && (
+          <div className="pt-2 flex flex-col items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setReport(sanitizeReport(MOCK_DATA));
+                setTranslatedData(MOCK_TRANSLATIONS);
+                setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+              }}
+              className="w-full sm:w-auto px-5 py-3 brutal-card bg-[var(--card-bg)] text-[var(--foreground)] border-2 border-[var(--border-color)] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase cursor-pointer flex items-center justify-center gap-2 hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors shadow-[3px_3px_0_var(--shadow-color)]"
+            >
+              <span>{t.viewDemoBtn}</span>
+            </button>
+            <p className="text-xs font-mono opacity-70 text-center">
+              {isUrdu
+                ? "(فرضی ڈیٹا پر مبنی نمونہ رپورٹ دیکھ کر انٹرفیس کو پرکھیں)"
+                : "(Explore sample report layout with fictional test data)"}
+            </p>
+          </div>
+        )}
+
+        <div ref={resultsRef} className="scroll-mt-16 sm:scroll-mt-24">
           {isSubmitting && <InvestigationProgress lang={language} />}
 
           {notice && !isSubmitting && (
@@ -2130,11 +1805,33 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
 
           {report && report.report && !isSubmitting && (() => {
             const judgeReport = report.report;
+            const isDemo = judgeReport.metadata?.target_entity === "Vanguard Apex Solutions" || (report as any).is_mock;
+
             return (
               <div className="space-y-10 mt-10 relative" dir={isUrdu ? "rtl" : "ltr"}>
                 <RightTimelineTracker activeSection={activeSection} t={t} />
 
                 <div className="space-y-10">
+                  {isDemo && (
+                    <div className="brutal-card bg-amber-500/10 border-4 border-amber-500 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 text-[var(--foreground)] shadow-[6px_6px_0_#d97706] fade-rise">
+                      <div className="flex items-center gap-3">
+                        <span className="px-2.5 py-1 rounded bg-amber-500 text-black font-mono font-black text-xs uppercase tracking-widest shrink-0">
+                          DEMO REPORT
+                        </span>
+                        <p className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wide opacity-90">
+                          {t.demoNoticeBanner}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={startNewScan}
+                        className="px-4 py-2 brutal-btn bg-amber-500 hover:bg-amber-600 text-black font-mono font-bold text-xs uppercase tracking-wider cursor-pointer transition-colors shrink-0"
+                      >
+                        {t.hideDemoBtn}
+                      </button>
+                    </div>
+                  )}
+
                   <CustomVerdictHero data={report} lang={language} translatedData={translatedData} t={t} />
 
                   <ReportActions data={report} t={t} />
@@ -2269,6 +1966,8 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
               </div>
             );
           })()}
+
+          <ExtensionShowcaseSection />
         </div>
       </main>
 
@@ -2285,24 +1984,20 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono font-bold uppercase tracking-wider">
-            <a href="#scanner" className="hover:opacity-70 transition-opacity">
-              {t.navScanner}
-            </a>
-            <span className="opacity-30">&bull;</span>
-            <a href="#demo" className="hover:opacity-70 transition-opacity">
+            <Link href="/demo-cases" className="hover:opacity-70 transition-opacity">
               {t.navDemo}
-            </a>
+            </Link>
             <span className="opacity-30">&bull;</span>
-            <a href="#whatsapp" className="hover:opacity-70 transition-opacity">
+            <Link href="/whatsapp" className="hover:opacity-70 transition-opacity">
               {t.navWhatsapp}
-            </a>
+            </Link>
             <span className="opacity-30">&bull;</span>
-            <a href="#extension" className="hover:opacity-70 transition-opacity">
+            <Link href="/extension" className="hover:opacity-70 transition-opacity">
               {t.navExtension}
-            </a>
+            </Link>
             <span className="opacity-30">&bull;</span>
-            <a href="https://ahmed-hassan-portfoliosite.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
-              {t.navPortfolio}
+            <a href="https://github.com/Dev-Ahmed-Hassan" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+              GitHub ↗
             </a>
           </nav>
         </div>
@@ -2312,5 +2007,46 @@ export default function Home({ initialReport }: { initialReport?: AnalyzeV2Respo
         </div>
       </footer>
     </div>
+  );
+}
+
+function ExtensionShowcaseSection() {
+  return (
+    <section
+      id="extension"
+      className="w-full brutal-card bg-[var(--card-bg)] border-2 sm:border-4 border-[var(--border-color)] p-6 sm:p-8 shadow-[8px_8px_0_var(--shadow-color)] space-y-4 scroll-mt-24 mt-12 text-left"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[var(--border-color)] pb-4">
+        <div className="flex items-center gap-2 font-mono text-xs text-[var(--foreground)]">
+          <span className="font-extrabold uppercase tracking-widest bg-[var(--accent-color)] text-[var(--accent-text)] px-2.5 py-1 rounded-sm">
+            BROWSER INTEGRATION
+          </span>
+          <span className="opacity-40">//</span>
+          <span className="font-bold opacity-80 uppercase">MANIFEST V3 ARCHITECTURE</span>
+        </div>
+        <span className="text-[11px] font-mono tracking-wider opacity-60 uppercase font-bold">
+          OFFICIAL ADD-ON
+        </span>
+      </div>
+
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-2">
+        <div className="space-y-2 max-w-2xl">
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--foreground)] tracking-tight">
+            ScamLess Browser Extension
+          </h3>
+          <p className="text-xs sm:text-sm font-sans text-[var(--foreground)] opacity-85 leading-relaxed">
+            Inspect suspicious recruiter messages and URLs directly inside your browser without opening secondary windows. View store verification status and full workflow screenshots on our dedicated extension page.
+          </p>
+        </div>
+
+        <Link
+          href="/extension"
+          className="py-3 px-6 brutal-btn font-mono font-bold text-xs uppercase tracking-wider shrink-0 flex items-center gap-2"
+        >
+          <span>EXPLORE EXTENSION PAGE</span>
+          <span>&rarr;</span>
+        </Link>
+      </div>
+    </section>
   );
 }
