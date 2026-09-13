@@ -3,22 +3,28 @@ export type Weight = "high" | "medium" | "low";
 export type EvidenceStatus = "confirmed" | "contradicted" | "unverified";
 
 export interface VerifiedFact {
-  claim: string;
-  evidence_status: EvidenceStatus;
-  snippet_quote: string;
-  source_url: string;
-  source_type: string;
-  search_intent: string;
-  weight: Weight;
+  claim?: string;
+  fact?: string;
+  evidence_status?: EvidenceStatus;
+  snippet_quote?: string;
+  source_url?: string;
+  source_type?: string;
+  source?: string;
+  search_intent?: string;
+  weight?: Weight;
+  confidence?: number;
+  notes?: string;
 }
 
 export interface RedFlag {
   flag: string;
-  technical_basis: string;
-  snippet_quote: string;
-  source_url: string;
-  source_type: string;
-  weight: "high" | "medium";
+  indicator?: string;
+  technical_basis?: string;
+  snippet_quote?: string;
+  source_url?: string;
+  source_type?: string;
+  weight?: "high" | "medium" | string;
+  severity?: string;
 }
 
 export interface LinkOfInterest {
