@@ -85,12 +85,12 @@ export interface JudgeReport {
   executive_summary: ExecutiveSummary;
   verified_facts: VerifiedFact[];
   red_flags: RedFlag[];
-  links_of_interest: Record<string, LinkOfInterest[]>;
+  links_of_interest?: Record<string, LinkOfInterest[]>;
   threat_vectors: ThreatVector[];
   uncertainties: Uncertainty[];
   user_facing_report: UserFacingReport;
   discarded_evidence: DiscardedItem[];
-  confidence_justification: string;
+  confidence_justification?: string;
 }
 
 export interface ExtractedEntities {

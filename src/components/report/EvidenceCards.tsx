@@ -91,16 +91,18 @@ export function RedFlags({ flags, lang }: { flags: RedFlag[]; lang: Lang }) {
             >
               {f.snippet_quote}
             </blockquote>
-            <a
-              href={f.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              dir="ltr"
-              className="inline-flex items-center gap-1.5 mt-1 text-[11px] font-mono uppercase tracking-wider border-b border-[var(--background)] border-opacity-40 px-1 hover:bg-[var(--background)] hover:text-[var(--foreground)] transition-colors opacity-75"
-            >
-              {t.sourceLabel}: {getDomain(f.source_url)}
-              <ExternalIcon className="w-3 h-3" />
-            </a>
+            {f.source_url && (
+              <a
+                href={f.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                dir="ltr"
+                className="inline-flex items-center gap-1.5 mt-1 text-[11px] font-mono uppercase tracking-wider border-b border-[var(--background)] border-opacity-40 px-1 hover:bg-[var(--background)] hover:text-[var(--foreground)] transition-colors opacity-75"
+              >
+                {t.sourceLabel}: {getDomain(f.source_url || "")}
+                <ExternalIcon className="w-3 h-3" />
+              </a>
+            )}
             <div className="mt-4 pt-3 border-t border-dashed border-[var(--background)] border-opacity-20">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-1.5">
                 {t.whyItMatters}
@@ -127,11 +129,11 @@ export function VerifiedFacts({ facts, lang }: { facts: VerifiedFact[]; lang: La
             className="border-l-4 border-[var(--border-color)] bg-[var(--card-bg)] pl-4 pr-4 py-4"
           >
             <div className="flex items-start justify-between gap-3 mb-1">
-              <h4 className="font-bold text-sm leading-snug min-w-0">{f.claim}</h4>
-              <StatusBadge status={f.evidence_status} lang={lang} />
+              <h4 className="font-bold text-sm leading-snug min-w-0">{f.claim || f.fact}</h4>
+              <StatusBadge status={f.evidence_status || "confirmed"} lang={lang} />
             </div>
-            <Quote text={f.snippet_quote} />
-            <SourceLink url={f.source_url} label={t.sourceLabel} />
+            {f.snippet_quote && <Quote text={f.snippet_quote} />}
+            {f.source_url && <SourceLink url={f.source_url} label={t.sourceLabel} />}
           </article>
         ))}
       </div>

@@ -622,9 +622,10 @@ function CustomRedFlags({ flags, lang, translatedData, t }: { flags: RedFlag[]; 
 
       <div className="space-y-6">
         {flags.map((f, i) => {
-          const flagText = (translatedFlagsList && translatedFlagsList[i]) ? translatedFlagsList[i] : f.flag;
-          const isHigh = f.weight.toLowerCase() === 'high' || f.weight.toLowerCase() === 'critical';
-          const isMed = f.weight.toLowerCase() === 'medium';
+          const flagText = (translatedFlagsList && translatedFlagsList[i]) ? translatedFlagsList[i] : (f.flag || f.indicator);
+          const weightStr = (f.weight || f.severity || "medium").toLowerCase();
+          const isHigh = weightStr === 'high' || weightStr === 'critical';
+          const isMed = weightStr === 'medium';
           const badgeClass = isHigh
             ? "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40"
             : isMed
@@ -642,31 +643,37 @@ function CustomRedFlags({ flags, lang, translatedData, t }: { flags: RedFlag[]; 
                   {flagText}
                 </h4>
                 <StatusBadge rx="0.4rem" className={`shrink-0 ${badgeClass}`}>
-                  {f.weight.toUpperCase()}
+                  {weightStr.toUpperCase()}
                 </StatusBadge>
               </div>
 
-              <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-5 sm:p-6 font-serif italic text-base sm:text-lg leading-relaxed">
-                <mark className="editorial-mark">
-                  <span>&quot;{f.snippet_quote}&quot;</span>
-                </mark>
-              </blockquote>
+              {f.snippet_quote && (
+                <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-5 sm:p-6 font-serif italic text-base sm:text-lg leading-relaxed">
+                  <mark className="editorial-mark">
+                    <span>&quot;{f.snippet_quote}&quot;</span>
+                  </mark>
+                </blockquote>
+              )}
 
-              <a
-                href={f.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
-              >
-                {t.sourceEvidenceLabel} {getDomain(f.source_url)} &rsaquo;
-              </a>
+              {f.source_url && (
+                <a
+                  href={f.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+                >
+                  {t.sourceEvidenceLabel} {getDomain(f.source_url || "")} &rsaquo;
+                </a>
+              )}
 
-              <div className="pt-4 border-t-2 border-dashed border-[var(--border-color)] space-y-2">
-                <p className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] opacity-60">
-                  {t.techAnalysisLabel}
-                </p>
-                <p className="text-base sm:text-lg leading-relaxed text-[var(--foreground)] opacity-95">{f.technical_basis}</p>
-              </div>
+              {f.technical_basis && (
+                <div className="pt-4 border-t-2 border-dashed border-[var(--border-color)] space-y-2">
+                  <p className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] opacity-60">
+                    {t.techAnalysisLabel}
+                  </p>
+                  <p className="text-base sm:text-lg leading-relaxed text-[var(--foreground)] opacity-95">{f.technical_basis}</p>
+                </div>
+              )}
             </article>
           );
         })}
@@ -698,7 +705,8 @@ function CustomVerifiedFacts({ facts, lang, translatedData, t }: { facts: Verifi
 
       <div className="space-y-4">
         {facts.map((f, i) => {
-          const claimText = (translatedFindings && translatedFindings[i]) ? translatedFindings[i] : f.claim;
+          const claimText = (translatedFindings && translatedFindings[i]) ? translatedFindings[i] : (f.claim || f.fact);
+          const statusStr = (f.evidence_status || "confirmed").toUpperCase();
           return (
             <article
               key={i}
@@ -707,24 +715,28 @@ function CustomVerifiedFacts({ facts, lang, translatedData, t }: { facts: Verifi
               <div className="flex items-start justify-between gap-4">
                 <h4 className="font-serif font-bold text-base sm:text-lg leading-snug text-[var(--foreground)]">{claimText}</h4>
                 <StatusBadge rx="0.4rem" className="shrink-0 bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40">
-                  {f.evidence_status.toUpperCase()}
+                  {statusStr}
                 </StatusBadge>
               </div>
 
-              <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-4 font-serif italic text-sm leading-relaxed">
-                <mark className="editorial-mark">
-                  <span>&quot;{f.snippet_quote}&quot;</span>
-                </mark>
-              </blockquote>
+              {f.snippet_quote && (
+                <blockquote className="border-2 border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] p-4 font-serif italic text-sm leading-relaxed">
+                  <mark className="editorial-mark">
+                    <span>&quot;{f.snippet_quote}&quot;</span>
+                  </mark>
+                </blockquote>
+              )}
 
-              <a
-                href={f.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
-              >
-                {t.sourceEvidenceLabel} {getDomain(f.source_url)} &rsaquo;
-              </a>
+              {f.source_url && (
+                <a
+                  href={f.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-mono tracking-wider border-b-2 border-[var(--border-color)] pb-0.5 text-[var(--foreground)] font-bold hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+                >
+                  {t.sourceEvidenceLabel} {getDomain(f.source_url || "")} &rsaquo;
+                </a>
+              )}
             </article>
           );
         })}
