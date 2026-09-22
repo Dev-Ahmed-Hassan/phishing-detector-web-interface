@@ -133,7 +133,7 @@ export const DEMO_CASES_LIST: DemoCaseItem[] = [
     id: "case-pcb",
     title: "Pakistan Cricket Board (PCB) Security Vacancy",
     category: "job",
-    severity: "suspicious",
+    severity: "safe",
     target_entity: "Pakistan Cricket Board (PCB)",
     verdict_line: "Senior Manager Security vacancy notice requiring 20 years service in Army or Police.",
     input_text: "We're Hiring! Pakistan Cricket Board (PCB) is seeking Senior Manager Security & Anti-Corruption. Essential Functions: Ensure safety of PCB assets & venues, coordinate with LEAs. Minimum Bachelor's Degree from HEC university and 20 years service in Pakistan Army, Punjab Police, or Sindh Police. Interested candidates apply by 5 p.m. on 17 September 2026 on www.pcb.com.pk/jobs.",
