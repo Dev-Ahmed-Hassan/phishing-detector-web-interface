@@ -13,6 +13,7 @@ if (typeof window === "undefined") {
         "Code Alpha.png": "code-alpha.png",
         "PCT Fielding Coach.png": "pct-fielding-coach.png",
         "Ubexis.jpeg": "ubexis.jpeg",
+        "Digiinn360.jpeg": "digiinn360.jpeg",
         "Screenshot 2026-09-12 160554.png": "ext-screenshot-1.png",
         "Screenshot 2026-09-12 160611.png": "ext-screenshot-2.png",
         "Screenshot 2026-09-12 160645.png": "ext-screenshot-3.png",
@@ -257,321 +258,25 @@ export const DEMO_CASES_LIST: DemoCaseItem[] = [
     }
   },
   {
-    id: "case-02",
-    title: "WhatsApp Task Reward & EasyPaisa Escrow Scam",
-    category: "whatsapp",
-    severity: "high",
-    target_entity: "Global Task Media",
-    verdict_line: "WhatsApp task scheme promising daily YouTube rewards via EasyPaisa deposits.",
-    input_text: "Earn Rs 5,000 daily by liking YouTube videos! Work 1 hour per day from home. Transfer Rs 1,500 security deposit to EasyPaisa Account 0300-9876543 to unlock VIP tasks.",
-    input_urls: ["https://wa.me/923009876543"],
-    input_files: [
-      { name: "whatsapp_voice_recruiter.mp3", type: "AUDIO", size: "1.4 MB" }
-    ],
-    report_data: {
-      status: "success",
-      message: "Investigation complete",
-      report: {
-        metadata: {
-          input_language: "english",
-          target_entity: "Global Task Media",
-          model: "gemini-2.5-flash",
-          temperature: 0,
-          total_facts: 2,
-          total_red_flags: 2,
-          total_links_of_interest: 1,
-          total_discarded: 0
-        },
-        executive_summary: {
-          verdict: "malicious",
-          confidence_score: 8,
-          primary_threat_vector: "Task Escrow Advance-Fee Wallet Drain",
-          one_sentence_takeaway: {
-            en: "Global Task Media uses fake YouTube task rewards to solicit EasyPaisa deposits before blocking candidate communications.",
-            ur: "یہ ایک جعلی ٹاسک اسکیم ہے جو ایزی پیسہ کے ذریعے رقم وصول کرنے کے بعد مواصلات منقطع کر دیتی ہے۔"
-          }
-        },
-        user_facing_report: {
-          title: "High-Risk Task Escrow Fraud Warning",
-          summary_paragraph: "Analysis confirms a task-based advance-fee fraud scheme operating over WhatsApp. Victims are promised high payouts for video likes but lose deposits sent to personal mobile wallets.",
-          what_we_checked: [
-            "WhatsApp Business Handle & Associated Reports",
-            "EasyPaisa Account Transaction Complaints",
-            "Known YouTube Task Fraud Templates"
-          ],
-          what_you_should_do: [
-            "Do not send money to personal EasyPaisa or JazzCash accounts.",
-            "Block the recruiter handle on WhatsApp immediately.",
-            "File a complaint on the FIA Cybercrime portal."
-          ]
-        },
-        verified_facts: [
-          {
-            fact: "Mobile wallet account registered to an individual, not a business",
-            source: "Wallet Database Check",
-            confidence: 98,
-            notes: "Account is a personal wallet tier."
-          }
-        ],
-        red_flags: [
-          {
-            flag: "Upfront deposit required to unlock earnings",
-            indicator: "Demands Rs 1,500 security deposit.",
-            technical_basis: "Classic advance-fee fraud signature.",
-            severity: "high"
-          }
-        ],
-        threat_vectors: [
-          {
-            vector: "Advance-Fee Mobile Wallet Drain",
-            technical_grounding: "Solicits non-refundable mobile wallet deposits.",
-            contributing_evidence: ["WhatsApp Message Logs"],
-            severity: "high"
-          }
-        ],
-        uncertainties: [],
-        discarded_evidence: []
-      }
-    }
-  },
-  {
-    id: "case-03",
-    title: "HBL Banking Lookalike Phishing Portal",
-    category: "phishing",
-    severity: "high",
-    target_entity: "Habib Bank Limited (HBL)",
-    verdict_line: "Spoofed banking portal soliciting urgent account verification credentials.",
-    input_text: "HBL Alert: Your account requires immediate verification to prevent suspension. Complete background review at http://hbl-careers-portal-verify.com/login before end of day.",
-    input_urls: ["http://hbl-careers-portal-verify.com/login"],
-    input_files: [
-      { name: "account_verification_notice.pdf", type: "PDF", size: "320 KB" }
-    ],
-    report_data: {
-      status: "success",
-      message: "Investigation complete",
-      report: {
-        metadata: {
-          input_language: "english",
-          target_entity: "Habib Bank Limited (HBL)",
-          model: "gemini-2.5-flash",
-          temperature: 0,
-          total_facts: 2,
-          total_red_flags: 2,
-          total_links_of_interest: 1,
-          total_discarded: 0
-        },
-        executive_summary: {
-          verdict: "suspicious",
-          confidence_score: 22,
-          primary_threat_vector: "Domain Typosquatting & Phishing Credential Harvest",
-          one_sentence_takeaway: {
-            en: "The URL hbl-careers-portal-verify.com is an unofficial lookalike domain impersonating Habib Bank Limited.",
-            ur: "یہ لنک حبیب بینک کا سرکاری پورٹل نہیں ہے بلکہ ایک غیر تصدیق شدہ ویب سائٹ ہے۔"
-          }
-        },
-        user_facing_report: {
-          title: "Typosquatting & Phishing Risk Warning",
-          summary_paragraph: "The provided recruitment link uses an unauthorized lookalike domain registered outside official HBL banking infrastructure.",
-          what_we_checked: [
-            "Official Bank Domain SSL & DNS Hierarchy",
-            "WHOIS Registration & Registrar Details",
-            "Authentication Redirect Targets"
-          ],
-          what_you_should_do: [
-            "Do not enter passwords or personal credentials on this link.",
-            "Navigate directly to the official bank careers page.",
-            "Report suspicious links to the bank IT security team."
-          ]
-        },
-        verified_facts: [
-          {
-            fact: "Domain hbl-careers-portal-verify.com is not owned by HBL",
-            source: "DNS Infrastructure Lookup",
-            confidence: 99,
-            notes: "Official domain is hbl.com."
-          }
-        ],
-        red_flags: [
-          {
-            flag: "Impersonation domain structure",
-            indicator: "Uses bank brand name combined with hyphenated keywords.",
-            technical_basis: "Signature typosquatting pattern.",
-            severity: "high"
-          }
-        ],
-        threat_vectors: [
-          {
-            vector: "Credential Harvesting",
-            technical_grounding: "Impersonates legitimate corporate login forms.",
-            contributing_evidence: ["Domain WHOIS Record"],
-            severity: "high"
-          }
-        ],
-        uncertainties: [],
-        discarded_evidence: []
-      }
-    }
-  },
-  {
-    id: "case-04",
-    title: "DarazPK Logistics Refund Scheme",
-    category: "payment",
-    severity: "high",
-    target_entity: "DarazPK Logistics",
-    verdict_line: "Impersonated e-commerce refund portal requesting debit card PINs & SMS OTPs.",
-    input_text: "Order #89212 status update: Payment failed. To process immediate refund of Rs 14,500, enter your debit card PIN and OTP on our refund portal.",
-    input_urls: ["http://daraz-refunds-pakistan.net/otp"],
-    input_files: [
-      { name: "daraz_refund_receipt.jpg", type: "IMG", size: "650 KB" }
-    ],
-    report_data: {
-      status: "success",
-      message: "Investigation complete",
-      report: {
-        metadata: {
-          input_language: "english",
-          target_entity: "DarazPK Logistics",
-          model: "gemini-2.5-flash",
-          temperature: 0,
-          total_facts: 2,
-          total_red_flags: 2,
-          total_links_of_interest: 1,
-          total_discarded: 0
-        },
-        executive_summary: {
-          verdict: "malicious",
-          confidence_score: 10,
-          primary_threat_vector: "OTP Harvesting & Debit Card Fraud",
-          one_sentence_takeaway: {
-            en: "Impersonates Daraz logistics to trick victims into sharing debit card PINs and bank SMS OTPs on a spoofed website.",
-            ur: "یہ ایک جعلی دراز پورٹل ہے جو بینک کارڈ اور OTP حاصل کر کے فراڈ کرتا ہے۔"
-          }
-        },
-        user_facing_report: {
-          title: "High-Risk OTP Harvesting Warning",
-          summary_paragraph: "Spoofed e-commerce refund portal requesting sensitive banking credentials and OTP tokens.",
-          what_we_checked: [
-            "Daraz Official Domain Security Advisory",
-            "URL Registrar Information & Hosting Node",
-            "SMS Sender Identity Protocols"
-          ],
-          what_you_should_do: [
-            "Never share OTPs or banking PINs on external websites.",
-            "Verify order refunds directly inside the official Daraz App."
-          ]
-        },
-        verified_facts: [
-          {
-            fact: "Domain daraz-refunds-pakistan.net registered yesterday",
-            source: "WHOIS Registry",
-            confidence: 99,
-            notes: "Recently registered fraud site."
-          }
-        ],
-        red_flags: [
-          {
-            flag: "Debit card PIN & OTP request",
-            indicator: "Requests confidential banking credentials.",
-            technical_basis: "Legitimate e-commerce platforms never request PINs for refunds.",
-            severity: "high"
-          }
-        ],
-        threat_vectors: [],
-        uncertainties: [],
-        discarded_evidence: []
-      }
-    }
-  },
-  {
-    id: "case-05",
-    title: "Instant Microfinance Loan APK Trap",
-    category: "payment",
-    severity: "high",
-    target_entity: "QuickCash MicroLoan",
-    verdict_line: "Unlicensed loan application requesting contact book access for extortion.",
-    input_text: "Instant Rs 50,000 personal loan approved without collateral! Download our official APK file and grant contacts permission to disburse funds to your wallet.",
-    input_urls: ["https://quick-cash-loan-pak.apk/download"],
-    input_files: [
-      { name: "loan_contract_sample.pdf", type: "PDF", size: "410 KB" },
-      { name: "app_permission_screen.png", type: "IMG", size: "920 KB" }
-    ],
-    report_data: {
-      status: "success",
-      message: "Investigation complete",
-      report: {
-        metadata: {
-          input_language: "english",
-          target_entity: "QuickCash MicroLoan",
-          model: "gemini-2.5-flash",
-          temperature: 0,
-          total_facts: 2,
-          total_red_flags: 2,
-          total_links_of_interest: 1,
-          total_discarded: 0
-        },
-        executive_summary: {
-          verdict: "malicious",
-          confidence_score: 5,
-          primary_threat_vector: "Malicious APK Contact Scraping & Extortion",
-          one_sentence_takeaway: {
-            en: "QuickCash MicroLoan uses unvetted APK downloads to extract victim contact lists for harassment and illegal fee extortion.",
-            ur: "یہ ایپلیکیشن فون کی فہرستیں چوری کر کے بلیک میلنگ اور غیر قانونی فیسیں وصول کرتی ہے۔"
-          }
-        },
-        user_facing_report: {
-          title: "High-Risk Malicious APK & Extortion Warning",
-          summary_paragraph: "Unlicensed microfinance app soliciting excessive device permissions outside official app stores.",
-          what_we_checked: [
-            "SECP Microfinance License Verification",
-            "Google Play Store / Official Store Filings",
-            "APK Malware & Contact Extraction Signatures"
-          ],
-          what_you_should_do: [
-            "Do not install APK files downloaded from direct web links.",
-            "Never grant contact permissions to unverified loan apps."
-          ]
-        },
-        verified_facts: [
-          {
-            fact: "App hosted on unverified third-party storage bucket",
-            source: "APK Header Analysis",
-            confidence: 99,
-            notes: "Not present on official Google Play Store."
-          }
-        ],
-        red_flags: [
-          {
-            flag: "Contact list permission requirement",
-            indicator: "Demands full address book access for loan disbursal.",
-            technical_basis: "Extortion loan app signature pattern.",
-            severity: "high"
-          }
-        ],
-        threat_vectors: [],
-        uncertainties: [],
-        discarded_evidence: []
-      }
-    }
-  },
-  {
-    id: "case-06",
-    title: "Verified Authentic Corporate Recruitment",
-    category: "legitimate",
+    id: "case-digiinn360",
+    title: "Digiinn360 - Red Team & Offensive Security Recruitment",
+    category: "job",
     severity: "safe",
-    target_entity: "Systems Limited",
-    verdict_line: "Verified publicly traded enterprise with official corporate career portal.",
-    input_text: "Thank you for applying for the Associate Software Engineer position at Systems Limited. Please review the position details on our official portal at https://www.systemsltd.com/careers.",
-    input_urls: ["https://www.systemsltd.com/careers"],
+    target_entity: "Digiinn360",
+    verdict_line: "Official recruitment flyer for Red Team Operators & Offensive Security Specialists at Digiinn360.",
+    input_text: "WE'RE HIRING: RED TEAM OPERATORS & OFFENSIVE SECURITY SPECIALISTS. Digiinn360 is building an elite Red Team and seeking passionate offensive security professionals to join us! Company Description: Digiinn360 is a technology-focused organization dedicated to providing innovative and secure digital solutions. Open Positions: Network Operations, Offensive Capabilities & AI Research, Penetration Testers / Red Team Operators.",
+    input_urls: ["https://digiinn360.com"],
     input_files: [
-      { name: "candidate_guide.pdf", type: "PDF", size: "1.1 MB" }
+      { name: "Digiinn360.jpeg", type: "IMG", size: "225 KB" }
     ],
+    ad_image: "/images/digiinn360.jpeg",
     report_data: {
       status: "success",
       message: "Investigation complete",
       report: {
         metadata: {
           input_language: "english",
-          target_entity: "Systems Limited",
+          target_entity: "Digiinn360",
           model: "gemini-2.5-flash",
           temperature: 0,
           total_facts: 3,
@@ -581,38 +286,32 @@ export const DEMO_CASES_LIST: DemoCaseItem[] = [
         },
         executive_summary: {
           verdict: "legitimate",
-          confidence_score: 94,
-          primary_threat_vector: "None Identified",
+          confidence_score: 91,
+          primary_threat_vector: "Verified Cybersecurity Entity",
           one_sentence_takeaway: {
-            en: "Systems Limited is a verified publicly traded enterprise with an established corporate web infrastructure and zero fee demands.",
-            ur: "سیسٹمز لمیٹڈ ایک تصدیق شدہ سرکاری ادارہ ہے جس کا ویب پورٹل اور ریکارڈ بالکل درست ہے۔"
+            en: "Digiinn360 is an active technology & cybersecurity organization recruiting offensive security specialists with standard corporate channels.",
+            ur: "ڈجی ان ۳۶۰ سائبر سیکیورٹی کا ایک تصدیق شدہ ادارہ ہے جو ریڈ ٹیم آپریٹرز کی بھرتی کر رہا ہے۔"
           }
         },
         user_facing_report: {
-          title: "Verified Authentic Enterprise Opportunity",
-          summary_paragraph: "Investigation confirms that the opportunity originates from the official corporate domain of Systems Limited with clean security metrics.",
+          title: "Verified Authentic Cybersecurity Recruitment",
+          summary_paragraph: "Verification indicates a legitimate recruitment drive for cybersecurity specialists with standard corporate recruitment practices.",
           what_we_checked: [
-            "Official Corporate SSL Certificates & DNS Records",
-            "SECP & Public Stock Exchange Listing Credentials",
-            "Recruitment Communication Protocols"
+            "Domain Infrastructure & Technical Footprint",
+            "Corporate Presence & Technology Operations",
+            "Job Posting Integrity & Payment Policy"
           ],
           what_you_should_do: [
-            "Proceed with the official application process on systemsltd.com.",
-            "Keep all communications strictly within official email channels."
+            "Apply directly via official Digiinn360 contact channels.",
+            "Verify official domain credentials when submitting sensitive CV details."
           ]
         },
         verified_facts: [
           {
-            fact: "Domain systemsltd.com registered over 20 years ago",
-            source: "WHOIS Registry",
-            confidence: 99,
-            notes: "Established corporate infrastructure."
-          },
-          {
-            fact: "Publicly traded entity on Pakistan Stock Exchange",
-            source: "Corporate Registry",
-            confidence: 99,
-            notes: "SECP filing confirmed."
+            fact: "Digiinn360 is a technology-focused cybersecurity organization",
+            source: "Corporate Registry & Domain Footprint",
+            confidence: 95,
+            notes: "Active cybersecurity firm."
           }
         ],
         red_flags: [],

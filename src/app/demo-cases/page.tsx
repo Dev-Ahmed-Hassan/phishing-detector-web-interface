@@ -26,7 +26,11 @@ export default function DemoCasesPage() {
   } = useThemeTransition();
 
   const filteredCases = DEMO_CASES_LIST.filter((item) => {
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "all" ||
+      item.category === selectedCategory ||
+      (selectedCategory === "suspicious" && (item.severity === "high" || item.severity === "suspicious")) ||
+      (selectedCategory === "legitimate" && item.severity === "safe");
     const matchesSearch =
       !searchQuery.trim() ||
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -154,10 +158,7 @@ export default function DemoCasesPage() {
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 font-mono text-xs">
             {[
               { id: "all", label: "ALL SCENARIOS" },
-              { id: "job", label: "JOB OFFERS" },
-              { id: "whatsapp", label: "WHATSAPP TASKS" },
-              { id: "phishing", label: "PHISHING URLS" },
-              { id: "payment", label: "REFUND FRAUD" },
+              { id: "suspicious", label: "HIGH-RISK & SUSPICIOUS" },
               { id: "legitimate", label: "VERIFIED SAFE" },
             ].map((cat) => (
               <button

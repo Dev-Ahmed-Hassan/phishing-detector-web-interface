@@ -143,17 +143,27 @@ export default function ExtensionPage() {
             </div>
 
             {/* Firefox Card */}
-            <div className="brutal-card bg-[var(--card-bg)] border-2 border-[var(--border-color)] p-6 space-y-3 shadow-[6px_6px_0_var(--shadow-color)]">
+            <div className="brutal-card bg-[var(--card-bg)] border-2 border-emerald-500/50 p-6 space-y-3 shadow-[6px_6px_0_var(--shadow-color)] relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <span className="font-mono font-bold text-xs uppercase opacity-60">FIREFOX ADD-ONS</span>
-                <span className="font-mono font-bold text-[10px] uppercase px-2 py-0.5 border border-amber-500 bg-amber-500/10 text-amber-500">
-                  UNDER REVIEW
+                <span className="font-mono font-bold text-[10px] uppercase px-2 py-0.5 border border-emerald-500 bg-emerald-500/10 text-emerald-500 font-bold">
+                  VERIFIED & APPROVED
                 </span>
               </div>
               <h3 className="font-serif font-bold text-xl text-[var(--foreground)]">Mozilla Firefox</h3>
               <p className="text-xs font-sans text-[var(--foreground)] opacity-80 leading-relaxed">
-                Submitted to Mozilla Developer Hub for Firefox Add-ons store listing review.
+                Approved and signed on Mozilla Developer Hub for Firefox Add-ons store distribution.
               </p>
+              <div className="pt-2">
+                <a
+                  href="https://addons.mozilla.org/en-US/firefox/addon/scamless-job-scam-detector/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-mono font-bold text-xs uppercase tracking-wider border-2 border-[var(--border-color)] shadow-[3px_3px_0_var(--shadow-color)] hover:bg-emerald-700 cursor-pointer transition-colors"
+                >
+                  <span>GET FIREFOX EXTENSION ↗</span>
+                </a>
+              </div>
             </div>
 
             {/* Chrome Card */}
@@ -172,12 +182,12 @@ export default function ExtensionPage() {
           </div>
 
           {/* EDITORIAL CALLOUT QUOTE */}
-          <div className="border-l-4 border-[var(--border-color)] pl-6 sm:pl-8 py-3 space-y-2">
-            <p className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--foreground)] opacity-60 uppercase">
-              STORE VERIFICATION NOTICE
+          <div className="border-l-4 border-emerald-500 pl-6 sm:pl-8 py-3 space-y-2 bg-emerald-500/5">
+            <p className="text-[11px] font-mono font-bold tracking-[0.2em] text-emerald-500 uppercase">
+              STORE VERIFICATION UPDATE
             </p>
             <p className="text-lg sm:text-2xl leading-relaxed font-serif italic text-[var(--foreground)] font-medium">
-              &ldquo;The extension is currently under review for both Firefox and Edge, and I haven&apos;t applied for Chrome yet. As soon as it is verified, we will provide you with the link right here!&rdquo;
+              &ldquo;Our Firefox Extension has officially been verified and approved on Mozilla Add-ons! You can install it directly from the link above. Edge and Chrome store listings will follow.&rdquo;
             </p>
           </div>
         </section>
